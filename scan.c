@@ -16,15 +16,16 @@ int scanhex(FILE *tape);
 
 int scanid(FILE *tape)
 {
-	int head = getc(tape);
-	if ((toupper(head)) >= 'A' && toupper(head) <= 'Z')
+	int buffer[2];
+	buffer[0] = getc(tape);
+	if ((toupper(buffer[0])) >= 'A' && toupper(buffer[0]) <= 'Z')
 	{
-		while ( ((toupper(head = getc(tape))) >= 'A' && toupper(head) <= 'Z')
-			|| (head >= '0' && head <= '9'));
-		ungetc(head, tape);
+		while ( ((toupper(buffer[1] = getc(tape))) >= 'A' && toupper(buffer[1]) <= 'Z')
+			|| (buffer[1] >= '0' && buffer[1] <= '9'));
+		ungetc(buffer[1], tape);
 		return ID;
 	}
-	ungetc(head, tape);
+	ungetc(buffer[0], tape);
 	return 0;
 }
 
@@ -56,41 +57,43 @@ int scanhex(FILE *tape)
 
 int scandec(FILE *tape)
 {
-	int head = getc(tape);
-	if (head >= '0' && head <= '9') {
-		if (head == '0') {
+	int buffer[2];
+	buffer[0] = getc(tape);
+	if (buffer[0] >= '0' && buffer[0] <= '9') {
+		if (buffer[0] == '0') {
 			return DEC;
 		}
 		// [0-9]*
-		while ( (head = getc(tape)) >= '0' && head <= '9');
-		ungetc (head, tape);
+		while ( (buffer[1] = getc(tape)) >= '0' && buffer[1] <= '9');
+		ungetc (buffer[1], tape);
 		return DEC;
 	}
-	ungetc (head, tape);
+	ungetc (buffer[0], tape);
 	return 0;
 }
 
 int scanoct(FILE *tape)
 {
-	int octPrefix = getc(tape);
-	if (octPrefix == '0')
+	int buffer[3];
+	buffer[0] = getc(tape);
+	if (buffer[0] == '0')
 	{
-		int head = getc(tape);
+		buffer[1] = getc(tape);
 		// special case: octal zero
-		if (head == '0')
+		if (buffer[1] == '0')
 		{
-			ungetc(head, tape);
+			//ungetc(buffer[1], tape);
 			return OCTAL;
 		}
-		if (head >= '1' && head <= '7')
+		if (buffer[1] >= '1' && buffer[1] <= '7')
 	  {
-			while ( ((head = getc(tape)) >= '0') && head <= '7');
-			ungetc(head, tape);
+			while ( ((buffer[2] = getc(tape)) >= '0') && buffer[2] <= '7');
+			ungetc(buffer[2], tape);
 			return OCTAL;
 		}
-		ungetc(head, tape);
+		ungetc(buffer[1], tape);
 	}
-	ungetc(octPrefix, tape);
+	ungetc(buffer[0], tape);
 	return 0;
 }
 
