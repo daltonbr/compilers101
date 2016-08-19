@@ -1,3 +1,5 @@
+/**@<parser.c>::**/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <tokens.h>
@@ -7,13 +9,9 @@
 
 /*************************** LL(1) grammar definition ******************************
  *
- * expr -> term rest
+ * expr -> term {addop term}
  *
- * rest -> addop term rest | <>
- *
- * term -> fact quoc
- *
- * quoc -> mulop fact quoc | <>
+ * term -> fact {mulop fact}
  *
  * fact -> vrbl | cons | ( expr )
  *
@@ -33,33 +31,16 @@
 
 /***************************** LL(1) grammar emulation *****************************
  *
- * expr -> term rest */
+ * expr -> term { addop term } */
 void expr (void)
 {
-	term(); rest();
-}
-
-/*
- * rest -> addop term rest | <> */
-void rest (void)
-{
-	if (addop()) {
-		term(); rest();
-	}
+	term(); while(addop()) { term(); }
 }
 /*
- * term -> fact quoc */
+ * term -> fact { mulop fact } */
 void term (void)
 {
-	fact(); quoc();
-}
-/*
- * quoc -> mulop fact quoc | <> */
-void quoc (void)
-{
-	if (mulop()) {
-		fact(); quoc();
-	}
+	fact(); while(mulop()) { fact(); }
 }
 /*
  * fact -> vrbl | cons | ( expr ) */
@@ -89,7 +70,7 @@ int addop (void)
 	switch(lookahead){
 	case '+':
 			match('+'); return '+';
-	case '-': 
+	case '-':
 			match('-'); return '-';
 	}
 	return 0;
@@ -102,7 +83,7 @@ int mulop (void)
 	switch(lookahead){
 	case '*':
 			match('*'); return '*';
-	case '/': 
+	case '/':
 			match('/'); return '/';
 	}
 	return 0;
