@@ -31,26 +31,32 @@
 
 /***************************** LL(1) grammar emulation *****************************
  *
- * expr -> term { addop term } */
+ *      source language        ||          object language
+ * -----------------------------------------------------------------------
+ * expr -> term { addop term } || expr.pf := term.pf { term.pf addop.pf }
+ * -----------------------------------------------------------------------
+ * expr -> term { addop term [[ printf(addop.pf); ]] }
+ */
 void expr (void)
-{
-	term(); while(addop()) { term(); }
+{       /**/int op/**/;
+	term(); while( op = addop() ) { term();/**/printf("%c ",op)/**/;}
 }
 /*
- * term -> fact { mulop fact } */
+ * term -> fact { mulop fact } || term.pf := fact.pf { fact.pf mulop.pf }
+ */
 void term (void)
-{
-	fact(); while(mulop()) { fact(); }
+{       /**/int op/**/;
+	fact(); while( op = mulop() ) { fact();/**/printf("%c ",op)/**/;}
 }
 /*
- * fact -> vrbl | cons | ( expr ) */
+ * fact -> vrbl | cons | ( expr ) || fact.pf := expr.pf */
 void fact (void)
 {
 	switch (lookahead) {
 	case ID:
-		match (ID); break;
+		match (ID);/**/printf("identifier ")/**/; break;
 	case DEC:
-		match (DEC); break;
+		match (DEC);/**/printf("decimal ")/**/;  break;
 	default:
 		match ('('); expr(); match (')');
 	}

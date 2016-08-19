@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <mybc.h>
 
 FILE *source;
 
@@ -27,6 +28,8 @@ main (int argc, char *argv[], char *envp[])
         lookahead = gettoken (source);
 
         expr ();
+
+        printf("\n");
 
         exit (0);
 }
