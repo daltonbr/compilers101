@@ -1,27 +1,32 @@
+/*
+* Compilers - Class Exercise - august 2, 2016
+* Professor: Eraldo Marinho
+* Author: Dalton Lima
+* version: 1.0
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>  //C99 requires to use toupper()
 
-#define DEC 		1
+#define DEC 	1
 #define OCTAL 	2
 #define HEXADEC	3
-#define PTF		 	4 //this is a floating point WITHOUT the expoent
+#define FIXP  	4 //this is a floating point WITHOUT the expoent
 #define ID			8192
 
 int scanid(FILE *tape);
 int scandec(FILE *tape);
 int scanoct(FILE *tape);
 int scanhex(FILE *tape);
-//int scanptf(FILE *tape);
+int scanfixp(FILE *tape);
 
 int scanid(FILE *tape)
 {
 	int buffer[2];
 	buffer[0] = getc(tape);
-	if ((toupper(buffer[0])) >= 'A' && toupper(buffer[0]) <= 'Z')
+	if (isalpha(buffer[0]))
 	{
-		while ( ((toupper(buffer[1] = getc(tape))) >= 'A' && toupper(buffer[1]) <= 'Z')
-			|| (buffer[1] >= '0' && buffer[1] <= '9'));
+		while (isalnum(buffer[1] = getc(tape)));
 		ungetc(buffer[1], tape);
 		return ID;
 	}
@@ -38,12 +43,9 @@ int scanhex(FILE *tape)
 		if ((toupper(buffer[1] = getc(tape))) == 'X')
 		{
 			// test for AT LEAST one hex char after 'X'
-			// special case? 0x0 ?
-			if ( ((toupper(buffer[2] = getc(tape))) >= 'A' && (toupper(buffer[2])) <= 'F')
-				|| (buffer[2] >= '0' && buffer[2] <= '9') )
+			if (isxdigit(buffer[2] = getc(tape)))
 			{
-				while ( ((toupper(buffer[3] = getc(tape))) >= 'A' && (toupper(buffer[3])) <= 'F')
-					|| (buffer[3] >= '0' && buffer[3] <= '9') );
+				while (isxdigit(buffer[3] = getc(tape)));
 				ungetc(buffer[3], tape);
 				return HEXADEC;
 			}
@@ -59,12 +61,14 @@ int scandec(FILE *tape)
 {
 	int buffer[2];
 	buffer[0] = getc(tape);
-	if (buffer[0] >= '0' && buffer[0] <= '9') {
-		if (buffer[0] == '0') {
+	if (isdigit(buffer[0]))
+	{
+		if (buffer[0] == '0')
+		{
 			return DEC;
 		}
 		// [0-9]*
-		while ( (buffer[1] = getc(tape)) >= '0' && buffer[1] <= '9');
+		while (isdigit(buffer[1] = getc(tape)));
 		ungetc (buffer[1], tape);
 		return DEC;
 	}
@@ -79,13 +83,7 @@ int scanoct(FILE *tape)
 	if (buffer[0] == '0')
 	{
 		buffer[1] = getc(tape);
-		// special case: octal zero
-		if (buffer[1] == '0')
-		{
-			//ungetc(buffer[1], tape);
-			return OCTAL;
-		}
-		if (buffer[1] >= '1' && buffer[1] <= '7')
+		if (buffer[1] >= '0' && buffer[1] <= '7')
 	  {
 			while ( ((buffer[2] = getc(tape)) >= '0') && buffer[2] <= '7');
 			ungetc(buffer[2], tape);
@@ -94,6 +92,37 @@ int scanoct(FILE *tape)
 		ungetc(buffer[1], tape);
 	}
 	ungetc(buffer[0], tape);
+	return 0;
+}
+
+int scanfixp(FILE *tape)
+{
+	int buffer[3];
+	if (scandec(tape))
+	{
+		buffer[0] = getc(tape);
+		if (buffer[0] == '.')
+		{
+			while (isdigit(buffer[1] = getc(tape)));
+			ungetc (buffer[1], tape);
+			return FIXP;
+		}
+		ungetc(buffer[0], tape);
+	}
+	// starting with '.'
+	else if ((buffer[0] = getc(tape)) == '.')
+	{
+		// must have AT LEAST one decimal char
+		if (isdigit(buffer[1] = getc(tape)))
+		{
+			while (isdigit(buffer[2] = getc(tape)));
+			ungetc (buffer[2], tape);
+			return FIXP;
+		}
+		ungetc(buffer[1], tape);
+		ungetc(buffer[0], tape);
+	}
+	rewind(tape);
 	return 0;
 }
 
@@ -118,7 +147,9 @@ int main (int argc, char *argv[], char *envp[])
 		printf ("hexadecimal\n");
 	} else if (scanoct(buffer)) {
 		printf ("octal\n");
-	} else if (scandec (buffer)) {
+	} else if (scanfixp(buffer)) {
+		printf ("fixed point\n");
+	} else if (scandec(buffer)) {
 		printf ("decimal\n");
 	} else {
 		printf ("parsed string is not a decimal, octal, hexadecimal nor id\n");
