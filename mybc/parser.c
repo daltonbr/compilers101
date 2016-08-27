@@ -1,10 +1,10 @@
 /**@<parser.c>::**/
-
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <tokens.h>
 #include <parser.h>
-
+#include <lexer.h>
 
 
 /*************************** LL(1) grammar definition ******************************
@@ -38,28 +38,40 @@
  * expr -> term { addop term [[ printf(addop.pf); ]] }
  */
 void expr (void)
-{       /**/int op/**/;
-	term(); while( op = addop() ) { term();/**/printf("%c ",op)/**/;}
+{       /**/int op, neg = 0/**/;
+	if (lookahead == '-') { match ('-'); /**/neg = '-'/**/;}
+        term(); /**/if(neg){printf("<+/-> ");}/**/
+	while( op = addop() ) { /**/printf("<enter> ")/**/; term();/**/printf("<%c> ",op)/**/;}
 }
 /*
  * term -> fact { mulop fact } || term.pf := fact.pf { fact.pf mulop.pf }
  */
 void term (void)
 {       /**/int op/**/;
-	fact(); while( op = mulop() ) { fact();/**/printf("%c ",op)/**/;}
+        fact();
+	while( op = mulop() ) { /**/printf("<enter> ")/**/; fact();/**/printf("<%c> ",op)/**/;}
 }
 /*
- * fact -> vrbl | cons | ( expr ) || fact.pf := expr.pf */
+ * previous version: fact -> vrbl | cons | ( expr ) || fact.pf := expr.pf
+ * new one: fact -> ID [ = expr ] | DEC | ( expr )
+ */
 void fact (void)
-{
-	switch (lookahead) {
-	case ID:
-		match (ID);/**/printf("identifier ")/**/; break;
-	case DEC:
-		match (DEC);/**/printf("decimal ")/**/;  break;
-	default:
-		match ('('); expr(); match (')');
-	}
+{/**/char bkplexeme[MAXID_SIZE+1]/**/;
+        switch (lookahead) {
+        case ID:
+		strcpy(bkplexeme, lexeme);
+		match (ID);
+		if (lookahead == '='){
+			match('='); expr();/**/printf("%s <store> ",bkplexeme)/**/;
+		} else {
+			/**/printf("%s ",bkplexeme)/**/;
+		}
+		break;
+        case DEC:
+                /**/printf("%s ",lexeme)/**/; match (DEC); break;
+        default:
+                match ('('); expr(); match (')');
+        }
 }
 /*
  * vrbl -> ID
@@ -73,26 +85,26 @@ void fact (void)
  * addop -> '+' | '-' */
 int addop (void)
 {
-	switch(lookahead){
-	case '+':
-			match('+'); return '+';
-	case '-':
-			match('-'); return '-';
-	}
-	return 0;
+        switch(lookahead){
+        case '+':
+                        match('+'); return '+';
+        case '-':
+                        match('-'); return '-';
+        }
+        return 0;
 }
 
 /*
  * mulop -> '*' | '/' */
 int mulop (void)
 {
-	switch(lookahead){
-	case '*':
-			match('*'); return '*';
-	case '/':
-			match('/'); return '/';
-	}
-	return 0;
+        switch(lookahead){
+        case '*':
+                        match('*'); return '*';
+        case '/':
+                        match('/'); return '/';
+        }
+        return 0;
 }
 /***************************** lexer-to-parser interface **************************/
 
@@ -100,14 +112,14 @@ int lookahead; // @ local
 
 void match (int expected)
  {
-	 if ( expected == lookahead) {
-		 lookahead = gettoken (source);
-	 } else {
-		 fprintf(stderr,"parser: token mismatch error. found # %d ",
-		 	lookahead);
-		 fprintf(stderr,"whereas expected # %d\n",
-		 	expected);
-		 exit (SYNTAX_ERR);
-	 }
+         if ( expected == lookahead) {
+                 lookahead = gettoken (source);
+         } else {
+                 fprintf(stderr,"parser: token mismatch error. found # %d ",
+                        lookahead);
+                 fprintf(stderr,"whereas expected # %d\n",
+                        expected);
+                 exit (SYNTAX_ERR);
+         }
  }
 

@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <tokens.h>
+#include <lexer.h>
 
 void skipspaces (FILE *dish)
 {
@@ -20,31 +21,37 @@ void skipspaces (FILE *dish)
         ungetc ( cake, dish );
 }
 
+char lexeme[MAXID_SIZE+1];//@ lexer.c
+
 int is_identifier(FILE *dish)
 {
-        int cake = getc(dish);
-        if (isalpha (cake) ) {
-                while (isalnum (cake = getc(dish)));
-                ungetc (cake, dish);
+        int i = 0;
+        lexeme[i] = getc(dish);
+        if (isalpha (lexeme[i]) ) {
+                for (i++; isalnum (lexeme[i] = getc(dish)); i++);
+                ungetc (lexeme[i], dish);
+                lexeme[i] = 0;
                 return ID;
         }
-        ungetc (cake, dish);
+        ungetc (lexeme[i], dish);
         return 0;
 }
 
 int is_decimal(FILE *dish)
 {
-        int cake = getc(dish);
-        if (isdigit (cake) ) {
-                if (cake == '0') {
+        int i;
+        if (isdigit (lexeme[0] = getc(dish)) ) {
+                if (lexeme[0] == '0') {
+			lexeme[1] = 0;
                         return DEC;
                 }
                 // [0-9]*
-                while ( isdigit (cake = getc(dish)) );
-                ungetc (cake, dish);
+                for(i=1; isdigit (lexeme[i] = getc(dish)); i++);
+                ungetc (lexeme[i], dish);
+		lexeme[i] = 0;
                 return DEC;
         }
-        ungetc (cake, dish);
+        ungetc (lexeme[0], dish);
         return 0;
 }
 
