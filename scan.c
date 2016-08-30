@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <ctype.h>  //C99 requires to use toupper()
 
+#define MAXSIZE_LEXEME  8 // Lexeme Max Buffer Size
 #define DEC 	1
 #define OCTAL 	2
 #define HEXADEC	3
@@ -20,23 +21,40 @@ int scanoct(FILE *tape);
 int scanhex(FILE *tape);
 int scanfixp(FILE *tape);
 
+char buffer[MAXSIZE_LEXEME+1];  // TODO: Must be local to the methods?
+
 int scanid(FILE *tape)
 {
-	int buffer[2];
+	char temp_char;	// used to read chars beyond MAXSIZE_LEXEME and feed back to the stream
 	buffer[0] = getc(tape);
 	if (isalpha(buffer[0]))
 	{
-		while (isalnum(buffer[1] = getc(tape)));
-		ungetc(buffer[1], tape);
+		int i = 1;
+		while (isalnum(buffer[i] = getc(tape)))
+		{
+			i++;
+			if (i >= MAXSIZE_LEXEME)
+			{
+				// reached max size, now stop buffering it...but keep reading
+				buffer[i] = 0; 	// terminating the string
+				while (isalnum(temp_char = getc(tape)));
+				ungetc(temp_char, tape);
+				printf("ID - lexeme %s (cropped) \n", buffer);
+				return ID;
+			}
+		}
+		ungetc(buffer[i], tape);
+		buffer[i] = 0;
+		printf("ID - lexeme %s \n", buffer);
 		return ID;
 	}
 	ungetc(buffer[0], tape);
+	buffer[0] = 0;  // Really necessary?
 	return 0;
 }
 
 int scanhex(FILE *tape)
 {
-	int buffer[4];
 	buffer[0] = getc(tape);
 	if (buffer[0] == '0')
 	{
@@ -45,8 +63,24 @@ int scanhex(FILE *tape)
 			// test for AT LEAST one hex char after 'X'
 			if (isxdigit(buffer[2] = getc(tape)))
 			{
-				while (isxdigit(buffer[3] = getc(tape)));
-				ungetc(buffer[3], tape);
+				int i = 3;
+				while (isxdigit(buffer[i] = getc(tape)))
+				{
+				i++;
+					if (i >= MAXSIZE_LEXEME)
+					{
+						// reached max size, now stop buffering it...but keep reading
+						char temp_char;	// used to read chars beyond MAXSIZE_LEXEME and feed back to the stream
+						buffer[i] = 0; 	// terminating the string
+						while (isxdigit(temp_char = getc(tape)));
+						ungetc(temp_char, tape);
+						printf("HEX - lexeme %s (cropped) \n", buffer);
+						return HEXADEC;
+					}
+				}
+				ungetc(buffer[i], tape);
+				buffer[i] = 0;
+				printf("HEX - lexeme %s \n", buffer);
 				return HEXADEC;
 			}
 			ungetc(buffer[2], tape);
@@ -54,6 +88,7 @@ int scanhex(FILE *tape)
 		ungetc(buffer[1], tape);
 	}
 	ungetc(buffer[0], tape);
+	buffer[0] = 0;
 	return 0;
 }
 
