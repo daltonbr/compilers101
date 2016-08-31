@@ -40,3 +40,4 @@ Thumbs.db
 # IDE's generated files #
 #########################
 *.ghc
+.vscode      # Visual Studio Code
