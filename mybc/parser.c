@@ -34,27 +34,37 @@
  * expr -> term { addop term } */
 void expr (void)
 {
-	term(); while(addop()) { term(); }
-}
-/*
- * term -> fact { mulop fact } */
-void term (void)
-{
-	fact(); while(mulop()) { fact(); }
-}
-/*
- * fact -> vrbl | cons | ( expr ) */
-void fact (void)
-{
-	switch (lookahead) {
-	case ID:
-		match (ID); break;
-	case DEC:
-		match (DEC); break;
-	default:
-		match ('('); expr(); match (')');
-	}
-}
+	int p_count = 0;
+	E_entry:
+	T_entry:
+	F_entry:
+		switch (lookahead) {
+			case ID:
+				match (ID);
+				
+				break;
+			case DEC:
+				match (DEC);
+				
+				break;
+			case '(':
+				match ('('); p_count++;
+				goto E_entry;
+				break;
+			case ')':
+				match ('('); p_count--;
+				if(p_count <0) {printf("MISSING (\n"); exit(0);}
+				goto T_entry;
+				break;			
+		}
+	if(mulop()) goto F_entry;
+	if(addop()) goto T_entry;
+	if(p_count < 0)
+		printf("MISSING (\n");
+	else if(p_count > 0)
+		printf("MISSING )\n");
+}	
+
 /*
  * vrbl -> ID
  *
