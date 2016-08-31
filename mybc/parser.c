@@ -41,28 +41,28 @@ void expr (void)
 		switch (lookahead) {
 			case ID:
 				match (ID);
-				
 				break;
 			case DEC:
 				match (DEC);
-				
 				break;
 			case '(':
 				match ('('); p_count++;
 				goto E_entry;
 				break;
 			case ')':
-				match ('('); p_count--;
-				if(p_count <0) {printf("MISSING (\n"); exit(0);}
-				goto T_entry;
+				match (')'); p_count--;
+				if(p_count <0) {printf("MISSING ( \n"); exit(0);}
 				break;			
 		}
 	if(mulop()) goto F_entry;
 	if(addop()) goto T_entry;
-	if(p_count < 0)
-		printf("MISSING (\n");
-	else if(p_count > 0)
-		printf("MISSING )\n");
+	if(lookahead == EOF)
+	{
+	 if (p_count > 0) printf("MISSING ) %d \n", p_count);
+	 exit(0);
+	}
+	goto F_entry;  // is this conceptually correct?
+	
 }	
 
 /*
