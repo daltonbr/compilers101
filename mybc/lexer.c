@@ -46,9 +46,9 @@ int is_decimal(FILE *dish)
                         return DEC;
                 }
                 // [0-9]*
-                for(i=1; isdigit (lexeme[i] = getc(dish)); i++);
+                for (i = 1; isdigit (lexeme[i] = getc(dish)); i++);
                 ungetc (lexeme[i], dish);
-		lexeme[i] = 0;
+		lexeme[i] = 0;		
                 return DEC;
         }
         ungetc (lexeme[0], dish);
@@ -72,6 +72,16 @@ int is_octal(FILE *dish)
         }
         ungetc (octpref, dish);
         return 0;
+}
+
+int is_separator(FILE *dish) 
+{
+	int seppref = getc(dish);
+	if(seppref == ';')
+		return CMDSEP;
+
+	ungetc(seppref, dish);
+	return 0;
 }
 
 int gettoken (FILE *tokenstream)

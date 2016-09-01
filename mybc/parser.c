@@ -5,6 +5,7 @@
 #include <tokens.h>
 #include <parser.h>
 #include <lexer.h>
+#include <interpreter.h>
 
 
 /*************************** LL(1) grammar definition ******************************
@@ -37,11 +38,31 @@
  * -----------------------------------------------------------------------
  * expr -> term { addop term [[ printf(addop.pf); ]] }
  */
+int is_cmdsep(char c)
+{
+	if(c == ';' || c == '\n')
+		return 1;
+	return 0;	 
+}
+
+void mybc(void)
+{
+	expr();
+
+	while(is_cmdsep(lookahead)) {
+		clear_accumulator();
+		clear_stack();
+		match (lookahead);
+		expr();
+	}
+	match(EOF);
+}
+
 void expr (void)
 {       /**/int op, neg = 0/**/;
 	if (lookahead == '-') { match ('-'); /**/neg = '-'/**/;}
         term(); /**/if(neg){printf("<+/-> ");}/**/
-	while( op = addop() ) { /**/printf("<enter> ")/**/; term();/**/printf("<%c> ",op)/**/;}
+	while( op = addop() ) { /**/add_to_stack()/**/; term();/**/operation(op)/**/;}
 }
 /*
  * term -> fact { mulop fact } || term.pf := fact.pf { fact.pf mulop.pf }
@@ -49,7 +70,7 @@ void expr (void)
 void term (void)
 {       /**/int op/**/;
         fact();
-	while( op = mulop() ) { /**/printf("<enter> ")/**/; fact();/**/printf("<%c> ",op)/**/;}
+	while( op = mulop() ) { /**/add_to_stack()/**/; fact();/**/operation(op)/**/;}
 }
 /*
  * previous version: fact -> vrbl | cons | ( expr ) || fact.pf := expr.pf
@@ -62,12 +83,16 @@ void fact (void)
 		strcpy(bkplexeme, lexeme);
 		match (ID);
 		if (lookahead == '='){
-			match('='); expr();/**/printf("%s <store> ",bkplexeme)/**/;
+			match('='); expr();
+			set_value_to_id(bkplexeme);
+			/**/printf("%s <store> ",bkplexeme)/**/;
 		} else {
+			next_value_with_id(bkplexeme);
 			/**/printf("%s ",bkplexeme)/**/;
 		}
 		break;
         case DEC:
+		next_value((double)atoi(lexeme));
                 /**/printf("%s ",lexeme)/**/; match (DEC); break;
         default:
                 match ('('); expr(); match (')');
@@ -112,7 +137,7 @@ int lookahead; // @ local
 
 void match (int expected)
  {
-         if ( expected == lookahead) {
+         if ( expected == lookahead ) {
                  lookahead = gettoken (source);
          } else {
                  fprintf(stderr,"parser: token mismatch error. found # %d ",
