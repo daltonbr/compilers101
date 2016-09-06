@@ -15,9 +15,7 @@
 void skipspaces (FILE *dish)
 {
         int cake;
-
         while ( isspace ( cake = getc (dish) ) );
-
         ungetc ( cake, dish );
 }
 
@@ -87,18 +85,13 @@ int is_separator(FILE *dish)
 int gettoken (FILE *tokenstream)
 {
         int token;
-
         skipspaces (tokenstream);
-
         if ( token = is_identifier(tokenstream) ) {
                 return ID;
         }
-
         if ( token = is_decimal (tokenstream) ) {
                 return DEC;
         }
-
         token = getc (tokenstream);
-
         return token;
 }
