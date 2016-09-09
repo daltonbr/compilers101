@@ -27,7 +27,7 @@ int is_identifier(FILE *stream)
             i++;
             if (i > MAXSIZE_LEXEME)
             {
-                // reached max size, now stop buffering it...but keep reading
+                // reached max size, now stop lexemeing it...but keep reading
                 lexeme[i-1] = 0; 	// terminating the string
                 while (isalnum(temp_char = getc(stream)));
                 ungetc(temp_char, stream);
@@ -47,40 +47,72 @@ int is_identifier(FILE *stream)
 
 int is_decimal(FILE *stream)
 {
-        int lexeme[2];
-        lexeme[0] = getc(stream);
-        if (isdigit(lexeme[0]))
+    lexeme[0] = getc(stream);
+    if (isdigit(lexeme[0]))
+    {
+        // at this point we have at least one decimal char valid
+        if (lexeme[0] == '0')  // special case ZERO
         {
-                if (lexeme[0] == '0')
-                {
-                        return DEC;
-                }
-                // [0-9]*
-                while (isdigit(lexeme[1] = getc(stream)));
-                ungetc (lexeme[1], stream);
-                return DEC;
+            lexeme[1] = 0;
+            return DEC;
         }
-        ungetc (lexeme[0], stream);
-        return 0;
+        // [0-9]*
+        int i = 0;
+        do
+        {
+            i++;
+			if (i > MAXSIZE_LEXEME)
+			{
+                char temp_char;	// used to read chars beyond MAXSIZE_LEXEME and feed back to the stream
+				// reached max size, now stop buffering it...but keep reading
+				lexeme[i-1] = 0; 	// terminating the string
+				while (isdigit(lexeme[i] = getc(stream)));
+				ungetc(temp_char, stream);
+				printf("DEC - lexeme %s (cropped) \n", lexeme);
+				return DEC;
+			}
+        }while (isdigit(lexeme[i] = getc(stream))); 
+        ungetc(lexeme[i], stream);
+        lexeme[i] = 0;
+        return DEC;
+    }
+    ungetc(lexeme[0], stream);
+    return 0;
 }
 
 int is_octal(FILE *stream)
 {
-        int octpref = getc(stream);
-        if (octpref == '0') {
-                int temp_char = getc(stream);
-                if ( temp_char >= '0' && temp_char <= '7') {
-                        while ( (temp_char = getc(stream)) >= '0' && temp_char <= '7');
-                        ungetc (temp_char, stream);
-                        return OCTAL;
-                } else {
-                        ungetc (temp_char, stream);
-                        ungetc (octpref, stream);
-                        return 0;
-                }
-        }
-        ungetc (octpref, stream);
-        return 0;
+	lexeme[0] = getc(stream);
+	if (lexeme[0] == '0')  //octal prefix
+	{
+        // test for AT LEAST one Oct char after the prefix
+		lexeme[1] = getc(stream);
+		if (lexeme[1] >= '0' && lexeme[1] <= '7')
+	    {
+            int i = 2;
+			while ( ((lexeme[i] = getc(stream)) >= '0') && lexeme[i] <= '7')
+            {
+                i++;
+                if (i > MAXSIZE_LEXEME)
+					{
+						// reached max size, now stop buffering it...but keep reading
+						char temp_char;	// used to read chars beyond MAXSIZE_LEXEME and feed back to the stream
+						lexeme[i-1] = 0; 	// terminating the string
+						while ( ((temp_char = getc(stream)) >= '0') && lexeme[i] <= '7');
+						ungetc(temp_char, stream);
+						printf("OCT - lexeme %s (cropped) \n", lexeme);
+						return OCTAL;
+					}
+            }
+			ungetc(lexeme[i], stream);
+            lexeme[i] = 0;
+            printf("OCT - lexeme %s \n", lexeme);
+			return OCTAL;
+		}
+		ungetc(lexeme[1], stream);
+	}
+	ungetc(lexeme[0], stream);
+	return 0;
 }
 
 int is_hexadecimal(FILE *stream)
@@ -99,7 +131,7 @@ int is_hexadecimal(FILE *stream)
                     i++;
                     if (i > MAXSIZE_LEXEME)
                     {
-                        // reached max size, now stop buffering it...but keep reading
+                        // reached max size, now stop lexemeing it...but keep reading
                         char temp_char; // used to read chars beyond MAXSIZE_LEXEME and feed back to the stream
                         lexeme[i-1] = 0;  // terminating the string
                         while (isxdigit(temp_char = getc(stream)));
@@ -141,6 +173,9 @@ int gettoken (FILE *stream)
         }
         if (( token = is_hexadecimal(stream)) ) {
                 return HEXADEC;
+        }
+        if (( token = is_octal(stream)) ) {
+                return OCTAL;
         }
         if (( token = is_decimal(stream)) ) {
                 return DEC;

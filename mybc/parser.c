@@ -101,12 +101,17 @@ void fact (void)
         }
         break;
     case HEXADEC:
-        next_value((double)(strtol(lexeme, NULL, 16)));  // convert the lexeme into a hex char
+        next_value((double)(strtol(lexeme, NULL, 16)));  // convert the lexeme into a HEX char
         /**/ printf("%s ", lexeme) /**/;
         match(HEXADEC);
         break;
+    case OCTAL:
+        next_value((double)(strtol(lexeme, NULL, 8)));  // convert the lexeme into a OCT char
+        /**/ printf("%s ", lexeme) /**/;
+        match(OCTAL);
+        break;
     case DEC:
-        next_value((double)atoi(lexeme));
+        next_value((double)(strtol(lexeme, NULL, 10)));  // convert the lexeme into a DEC char
         /**/ printf("%s ", lexeme) /**/;
         match(DEC);
         break;
