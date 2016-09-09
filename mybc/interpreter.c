@@ -16,6 +16,7 @@ int sp = -1;                                    //stack pointer
 double stack[MAXSTACK_SIZE];
 double accumulator;
 
+// method to check if an Identifier is already set to our memory table
 int has_id(char *id) 
 { 	
 	int index = find_id_index(id);
@@ -23,25 +24,24 @@ int has_id(char *id)
     else return 1;
 }
 
+// method to return a value of an Identifier (already in the table)
 double find_id_value(char *id) 
 {
     int i;
     for(i = 0; i < sizeof(symtab); i++) { 
-		if(strcmp(symtab[i], id) == 0) { // here was the problem  ( ==0 )
+		if(strcmp(symtab[i], id) == 0) {
             return memtab[i];
         }
 	}
     return 0; //TODO must return error?
 }
 
+// method that return the index of an identifier (in the memory table); -1 indicate ID not found
 int find_id_index(char *id)
 {
     int i;
-	//if(sp == -1) return -1;
-
     for(i = 0; i < sizeof(memtab)/sizeof(double); i++) {
 		if(strcmp(symtab[i], id) == 0) {
-            //printf(" [Debug: ID %s - symtab %s - index: %d - value: %.2f] ",id, symtab[i], i, memtab[i]);
 			return i;
 		}
 	}
@@ -53,13 +53,12 @@ void set_value_to_id(char *id)
     int index = find_id_index(id);
     if(index < 0) {
         register_id(id, accumulator);
-        //printf(" [Register ID %s with acc %.2f]", id, accumulator);
         index = find_id_index(id);
     }
     memtab[index] = accumulator;
-    //printf(" [Debug: acc: %.2f - stack: %.2f] ", accumulator, stack[sp]);
 }
 
+// method to input a new ID and it's value to the memory table
 void register_id(char *id, double value)
 {
     strcpy(symtab[symtab_nextentry], id);
@@ -72,7 +71,6 @@ void push_stack()
     sp++;
     if(sp == MAXSTACK_SIZE)
         exit(1);
-
     stack[sp] = accumulator;
 }
 
@@ -108,12 +106,12 @@ void next_value_with_id(char *id)
     double INITIAL_VALUE = 0.0f;
     if(!has_id(id)) {
         printf("Warning: ID not initialized! %s will be set to 0.0\n", id);
-        register_id(id, INITIAL_VALUE);  //TODO register with 0
+        register_id(id, INITIAL_VALUE);
     }
     next_value(find_id_value(id));  // load the id value to the accumulator
-    //printf("[Acc %.2f - ID: %s]", accumulator, id);    
 }
 
+// method that makes an math operation between the accumulator and the stack (top) given an math operator
 void operation(char op)
 {
     if(sp < 0)
@@ -131,7 +129,4 @@ void operation(char op)
         accumulator = first_value * second_value;
 
     printf("result: %.2f\n", accumulator);
-} 
-
-
-
+}

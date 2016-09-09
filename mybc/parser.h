@@ -1,5 +1,7 @@
 /**@<parser.h>::**/
 
+#pragma once
+
 extern int lookahead; // @ local
 
 extern int gettoken (FILE *); // @ lexer.c
@@ -14,6 +16,7 @@ extern void next_value_with_id (char *); // @ interpreter
 extern void operation (char); // @ interpreter
 
 /* syntax names */
+void mybc (void);
 void expr (void);
 void rest (void);
 void term (void);

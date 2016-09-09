@@ -62,7 +62,7 @@ void expr (void)
 {       /**/int op, neg = 0/**/;
 	if (lookahead == '-') { match ('-'); /**/neg = '-'/**/;}
         term(); /**/if(neg){printf("<+/-> ");}/**/
-	while( op = addop() ) { /**/push_stack()/**/; term();/**/operation(op)/**/;}
+	while(( op = addop()) ) { /**/push_stack()/**/; term();/**/operation(op)/**/;}
 }
 /*
  * term -> fact { mulop fact } || term.pf := fact.pf { fact.pf mulop.pf }
@@ -70,7 +70,7 @@ void expr (void)
 void term (void)
 {       /**/int op/**/;
         fact();
-	while( op = mulop() ) { /**/push_stack()/**/; fact();/**/operation(op)/**/;}
+	while(( op = mulop()) ) { /**/push_stack()/**/; fact();/**/operation(op)/**/;}
 }
 /*
  * previous version: fact -> vrbl | cons | ( expr ) || fact.pf := expr.pf
