@@ -77,7 +77,7 @@ void term (void)
  * new one: fact -> ID [ = expr ] | DEC | ( expr )
  */
 void fact (void)
-{/**/char bkplexeme[MAXID_SIZE+1]/**/;
+{/**/char bkplexeme[MAXSIZE_LEXEME+1]/**/;
         switch (lookahead) {
         case ID:
 		strcpy(bkplexeme, lexeme);

@@ -1,11 +1,5 @@
 /**@<lexer.c>::**/
 
-/*
-
-1: Tue Aug 16 20:49:40 BRT 2016
-
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -19,20 +13,36 @@ void skipspaces (FILE *stream)
         ungetc ( temp_char, stream );
 }
 
-char lexeme[MAXID_SIZE+1];//@ lexer.c
+char lexeme[MAXSIZE_LEXEME+1];//@ lexer.c
 
 int is_identifier(FILE *stream)
 {
-        int i = 0;
-        lexeme[i] = getc(stream);
-        if (isalpha (lexeme[i]) ) {
-                for (i++; isalnum (lexeme[i] = getc(stream)); i++);
-                ungetc (lexeme[i], stream);
-                lexeme[i] = 0;
-                return ID;
-        }
-        ungetc (lexeme[i], stream);
-        return 0;
+	char temp_char;	// used to read chars beyond MAXSIZE_SIZE and feed back to the stream
+	lexeme[0] = getc(stream);
+	if (isalpha(lexeme[0]))
+	{
+		int i = 1;
+		while (isalnum(lexeme[i] = getc(stream)))
+		{
+			i++;
+			if (i > MAXSIZE_LEXEME)
+			{
+				// reached max size, now stop lexemeing it...but keep reading
+				lexeme[i-1] = 0; 	// terminating the string
+				while (isalnum(temp_char = getc(stream)));
+				ungetc(temp_char, stream);
+				printf("Debug: ID - lexeme %s (cropped) \n", lexeme);
+				return ID;
+			}
+		}
+		ungetc(lexeme[i], stream);
+		lexeme[i] = 0;
+		printf("Debug: ID - lexeme %s \n", lexeme);
+		return ID;
+	}
+	ungetc(lexeme[0], stream);
+	lexeme[0] = 0;
+	return 0;
 }
 
 int is_decimal(FILE *stream)

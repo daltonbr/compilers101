@@ -10,7 +10,7 @@
 #define MAXSTACK_SIZE 	64
 
 int symtab_nextentry = 0;
-char symtab[MAXSYMTAB_SIZE][MAXID_SIZE + 1];    //pos, id name
+char symtab[MAXSYMTAB_SIZE][MAXSIZE_LEXEME + 1];    //pos, id name
 double memtab[MAXSYMTAB_SIZE];                  //float value
 int sp = -1;                                    //stack pointer
 double stack[MAXSTACK_SIZE];

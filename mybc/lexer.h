@@ -2,5 +2,5 @@
 
 #pragma once
 
-#define         MAXID_SIZE            32
-extern char lexeme[MAXID_SIZE+1];//@ lexer.c
+#define         MAXSIZE_LEXEME            8
+extern char lexeme[MAXSIZE_LEXEME+1];//@ lexer.c
