@@ -6,6 +6,7 @@ enum {
 	ID = 1025,
 	DEC,
 	OCTAL,
+	HEXADEC,
 	CMDSEP,
 };
 

@@ -49,8 +49,9 @@ void mybc(void)
 {
 	expr();
 
-	while(is_cmdsep(lookahead)) {
-                clear_accumulator();
+	while(is_cmdsep(lookahead))
+    {
+        clear_accumulator();
 		clear_stack();
 		match (lookahead);
 		expr();
@@ -59,17 +60,19 @@ void mybc(void)
 }
 
 void expr (void)
-{       /**/int op, neg = 0/**/;
+{       
+    /**/int op, neg = 0/**/;
 	if (lookahead == '-') { match ('-'); /**/neg = '-'/**/;}
-        term(); /**/if(neg){printf("<+/-> ");}/**/
+    term(); /**/if(neg){printf("<+/-> ");}/**/
 	while(( op = addop()) ) { /**/push_stack()/**/; term();/**/operation(op)/**/;}
 }
 /*
  * term -> fact { mulop fact } || term.pf := fact.pf { fact.pf mulop.pf }
  */
 void term (void)
-{       /**/int op/**/;
-        fact();
+{
+    /**/int op/**/;
+    fact();
 	while(( op = mulop()) ) { /**/push_stack()/**/; fact();/**/operation(op)/**/;}
 }
 /*
@@ -77,26 +80,42 @@ void term (void)
  * new one: fact -> ID [ = expr ] | DEC | ( expr )
  */
 void fact (void)
-{/**/char bkplexeme[MAXSIZE_LEXEME+1]/**/;
-        switch (lookahead) {
-        case ID:
-		strcpy(bkplexeme, lexeme);
-		match (ID);
-		if (lookahead == '='){
-			match('='); expr();
-			set_value_to_id(bkplexeme);
-			/**/printf("%s <store> ",bkplexeme)/**/;
-		} else {
-			next_value_with_id(bkplexeme);
-			/**/printf("%s ",bkplexeme)/**/;
-		}
-		break;
-        case DEC:
-		next_value((double)atoi(lexeme));
-                /**/printf("%s ",lexeme)/**/; match (DEC); break;
-        default:
-                match ('('); expr(); match (')');
+{
+    /**/ char bkplexeme[MAXSIZE_LEXEME + 1] /**/;
+    switch (lookahead)
+    {
+    case ID:
+        strcpy(bkplexeme, lexeme);
+        match(ID);
+        if (lookahead == '=')
+        {
+            match('=');
+            expr();
+            set_value_to_id(bkplexeme);
+            /**/ printf("%s <store> ", bkplexeme) /**/;
         }
+        else
+        {
+            next_value_with_id(bkplexeme);
+            /**/ printf("%s ", bkplexeme) /**/;
+        }
+        break;
+    case HEXADEC:
+        next_value((double)(strtol(lexeme, NULL, 16)));  // convert the lexeme into a hex char
+        /**/ printf("%s ", lexeme) /**/;
+        match(HEXADEC);
+        break;
+    case DEC:
+        next_value((double)atoi(lexeme));
+        /**/ printf("%s ", lexeme) /**/;
+        match(DEC);
+        break;
+    default:
+        match('(');
+        expr();
+        match(')');
+        break;
+    }
 }
 /*
  * vrbl -> ID
