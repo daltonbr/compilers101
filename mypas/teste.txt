@@ -1,0 +1,36 @@
+if(3+2)then
+endif
+
+trocar myprogcalc -> mypas em:
+	nome dos arquivos
+	nome do projeto
+	makefile
+	project = mypas
+	relocatables = $(project).o lexer.o ....
+	executable=$(project)
+
+mypas 		-> 	body '.'
+body		->	declarative imperative
+declarative	->	[ VAR namelist : vartype ';' { namelist : vartype ';' } ] { sbpmod sbpname parmdef [ : fnctype ] ';' body ';' }
+
+sbpmod		->	PROCEDURE | FUNCTION
+
+sbpname		->	ID
+
+parmdef		->	[ ( [VAR] namelist ';' vartype { ';' [VAR] namelist ';' vartype } ) ]
+
+imperative 	-> 	BEGIN stmtlist ENDi
+
+stmtlist	->	stmt { ';' stmt }
+
+stmt		-> 	  imperative
+			| IF expr THEN stmt [ ELSE stmt ] 
+			| WHILE expr DO stmt 
+			| REPEAT stmtlist UNTIL expr
+			| expr
+			| <empty>
+
+cmdbody		-> 	body
+match(EOF) 	-> 	match('.')
+DO 		-> 	REPEAT
+dostmt		->	repstmt

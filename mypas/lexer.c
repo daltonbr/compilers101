@@ -25,6 +25,21 @@ void skipspaces (FILE *dish)
         ungetc ( lexeme[0], dish );
 }
 
+//hoje
+int isassign (FILE * tape)
+{
+	if ((lexeme[0] = getc(tape)) == ':') {
+		if ((lexeme[1] = getc(tape)) == '=') {
+			lexeme[2] = 0;
+			return ASGN;
+		}
+		ungetc(lexeme[1], tape);
+	}
+	ungetc(lexeme[0], tape);
+	return 0;
+}
+//-hoje
+
 int isidentifier(FILE *dish)
 {
 	int token;
@@ -39,21 +54,22 @@ int isidentifier(FILE *dish)
         ungetc (lexeme[0], dish);
         return 0;
 }
-
-int isdecimal(FILE *dish)
+//hoje
+int isnum(FILE *dish)
 {
         if (isdigit (lexeme[0] = getc(dish)) ) {
                 if (lexeme[0] == '0') {
-                        return DEC;
+                        return NUM;
                 }
                 // [0-9]*
                 while ( isdigit (lexeme[0] = getc(dish)) );
                 ungetc (lexeme[0], dish);
-                return DEC;
+                return NUM;
         }
         ungetc (lexeme[0], dish);
         return 0;
 }
+//-hoje
 
 int isoctal(FILE *dish)
 {

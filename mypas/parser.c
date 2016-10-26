@@ -2,10 +2,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
 #include <tokens.h>
 #include <parser.h>
 #include <keywords.h>
-
+#include <symtab.h>
 
 /*************************** LL(1) grammar definition ******************************
  *
@@ -20,11 +22,16 @@ void mypas(void)
 /*
  * body -> stmt { stmtsep stmt }
  */
+/*
+ * body -> declarative imperative
+ */
 void body(void)
 {
 	declarative();
 	imperative();
 }
+
+
 
 /*
  * stmtsep -> ; | EOL
@@ -39,7 +46,8 @@ int stmtsep(void)
 }
 
 /*
- * stmt -> IF expr THEN body { ELIF expr THEN body } [ ELSE body ] ENDIF
+ * stmt -> imperative
+ * 	| IF expr THEN body { ELIF expr THEN body } [ ELSE body ] ENDIF
  * 	| WHILE expr DO body ENDDO 
  *	| DO body WHILE expr
  *	| expr
@@ -60,20 +68,42 @@ void stmt(void)
 		case REPEAT:
 			repstmt();
 			break;
-		case ID: case DEC: case'(':
+		case ID: case NUM: case'(':
 			expr();
 			break;
-		
+		default:
+			; /*<empty>*/
 	}
 }
+
+/*
+ * WRITE -> WRITE ( " string " )
+ */
+
+/*
+ * declarative -> [
+ * 		   VAR namelist ':' vartype ';' ||
+ * 		     { namelist ':' vartype ';' }
+ * 		  ]
+ *		  { sbpmod sbpname parmdef [ ':' fnctype ] ';' body ';' }
+ */
+
 void declarative(void)
 {
+	/*
+	 * vardef -> VAR namelist ':" vartype ';' || vardef.symtab <- forall symbol in namelist.name do
+	 * 								symtab_append(symbol,vartype.type)
+	 * 							      end do
+	 */
+	
 	if(lookahead == VAR) {
 		match(VAR);
 		do {
-			namelist();
-			match(';');
-			vartype();
+			/*[[*/int type, i/*]]*/;
+			/*[[*/char **namev = /*]]*/ namelist();
+			match(':');
+			/*[[*/type = /*]]*/ vartype();
+			/*[[*/for(i=0; namev[i];i++)symtab_append(namev[i],type)/*]]*/;
 			match(';');
 		} while(lookeahead == ID);
 	}
@@ -91,7 +121,11 @@ void declarative(void)
 	}
 }
 
-void imperative(void)
+/*
+ * imperative -> BEGIN stmtlist END
+ */
+void
+imperative(void)
 {
 	match(BEGIN);
 	stmt();
@@ -116,14 +150,25 @@ _par_begin:
 	}	
 }
 
-void namelist(void)
+/*
+ * namelist -> ID { , ID}
+ */
+#define MAX_ARG_NUM 1024
+char **
+namelist(void)
 {
+	/*[[*/char **symvec = calloc(MAX_ARG_NUM, sizeof(char **));
+	int i = 0/*]]*/;
 	_namelist_begin:
+	/*[[*/symvec[i] = malloc(sizeof(lexeme) + 1;
+	strcpy(symvec[i], lexeme);
+	i++/*]]*/;
 	match(ID);
 	if(lookahead == ',') {
 		match(',');
 		goto _namelist_begin;
 	}
+	/*[[*/return symvec;/*]]*/
 }
 
 void stmtlist(void)
@@ -138,12 +183,28 @@ void stmtlist(void)
 
 void vartype(void)
 {
-	match(DEC);
+	switch(lookahead){
+		case INTEGER:
+			match(INTEGER);
+			break;
+		case REAL:
+			match(REAL);
+			break;
+		default:
+			match( BOOLEAN);
 }
 
 void fnctype(void)
 {
-	match(DEC);
+	switch(lookahead){
+		case INTEGER:
+			match(INTEGER);
+			break;
+		case REAL:
+			match(REAL);
+			break;
+		default:
+			match( BOOLEAN);
 }
 
 /*
@@ -219,22 +280,29 @@ void expr (void)
 	int p_count = 0;
 	if(lookahead == '-') {
 		match('-');
+	} else if (lookahead == NOT) {
+		match(NOT);
 	}
 	E_entry:	
 	T_entry:
 	F_entry:
 		switch (lookahead) {
 			case ID:
-				printf("ID: %c", lookahead);
+				/*symbol must be declared**/
+				if(symtab_lookup(lookahead) == -1) {
+					printf("FATAL ERROR, VARIABLE NOT DECLARED");
+					exit(0);
+				}
+				
 				match (ID);
-				if (lookahead == '=') {
-					match('=');
+				if (lookahead == ASGN) {
+					match(ASGN);
 					expr();
 				}
 				break;
-			case DEC:
+			case NUM:
 				printf("decimal: %c", lookahead);
-				match (DEC);
+				match (NUM);
 				
 				break;
 			case '(':
@@ -281,10 +349,14 @@ int addop (void)
 int mulop (void)
 {
 	switch(lookahead){
-	case '*':
+		case '*':
 			match('*'); return '*';
-	case '/':
+		case '/':
 			match('/'); return '/';
+		case AND:
+			match(AND); return AND;
+		case OR:
+			match(OR); return OR;
 	}
 	return 0;
 }
@@ -304,4 +376,3 @@ void match (int expected)
 		 exit (SYNTAX_ERR);
 	 }
  }
-

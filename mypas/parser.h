@@ -1,7 +1,7 @@
 /**@<parser.h>::**/
 
 extern int lookahead; // @ local
-
+extern char lexeme[];
 extern int gettoken (FILE *); // @ lexer.c
 
 extern FILE *source; // @ main.c
@@ -9,9 +9,9 @@ extern FILE *source; // @ main.c
 extern void match (int); // @ local
 
 /* syntax names */
-void progcalc(void);
-void cmdblock(void);
-int cmdsep(void);
+void mypas(void);
+void body(void);
+void smtmlist(void);
 void cmd(void);
 void ifstmt(void);
 void whilestmt(void);
