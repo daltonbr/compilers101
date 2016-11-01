@@ -2,9 +2,11 @@ CFLAGS=-I. -g
 
 project=mypas
 
-relocatables=$(project).o lexer.o progcalc.o parser.o keywords.o
+relocatables=$(project).o lexer.o parser.o keywords.o symtab.o
 
 executable=$(project)
+
+default: $(executable)
 
 $(executable): $(relocatables)
 	cc -o $(executable) $(relocatables)

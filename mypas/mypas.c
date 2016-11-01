@@ -7,12 +7,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-FILE *source;
+FILE *source, *object;
 
 extern int lookahead; // @ parser.c
 
 main (int argc, char *argv[], char *envp[])
 {
+        object = stdout;    // TODO: output must be in a file, the object file, for now we output to the terminal
         if (argc == 1) {
                 source = stdin;
         } else {

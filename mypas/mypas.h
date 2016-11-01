@@ -5,7 +5,7 @@
 2: Tue Set 06 22:00:00 BRT 2016
 */
 
-extern FILE *source;
+extern FILE *source, *object;
 
 extern int lookahead; // @ parser.c
 

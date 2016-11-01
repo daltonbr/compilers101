@@ -277,6 +277,7 @@ void repstmt
  * expr -> ['-'] term { addop term } */
 void expr (void)
 {
+    /*[[*/ int varlocality, lvalue = 0; /*]]*/ 
 	int p_count = 0;
 	if(lookahead == '-') {
 		match('-');
@@ -288,17 +289,25 @@ void expr (void)
 	F_entry:
 		switch (lookahead) {
 			case ID:
-				/*symbol must be declared**/
-				if(symtab_lookup(lookahead) == -1) {
-					printf("FATAL ERROR, VARIABLE NOT DECLARED");
-					exit(0);
-				}
-				
+				/*[[*/ varlocality = symtab_lookup(lexeme);
+                if (varlocality < 0) {
+                    fprintf(stderr, "parser: %s not declared - fatal error!\n", lexeme);
+                    //TODO: need to set a flag to this fatal error
+                }
+                /*]]*/
 				match (ID);
-				if (lookahead == ASGN) {
-					match(ASGN);
+				if (lookahead == ASGN) { //ASGN = ":="
+					/* located variable is LVALUE */
+                    /*[[*/ lvalue = 1; /*[[*/ 
+                    match(ASGN);
 					expr();
 				}
+                /*[[*/
+                else if(varlocality > -1) {
+                    fprintf(object,"\tpushl %%eax\n\tmov %s,%%eax\n",
+                    symtab_stream + symtab[varlocality][0]);
+                }
+                /*]]*/
 				break;
 			case NUM:
 				printf("decimal: %c", lookahead);
@@ -322,6 +331,11 @@ void expr (void)
 	
 	if(p_count > 0)
 		printf("MISSING )\n");
+
+    /* expression ends down here */
+    /*[[*/ if (varlocality > -1 && lvalue) { 
+    fprintf(object, "\tmovl %%eax,%s\n", symtab_stream + symtab[varlocality][0]);
+    /*]]*/  
 }
 /*
  * vrbl -> ID
