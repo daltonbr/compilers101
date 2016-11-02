@@ -8,6 +8,7 @@
 #include <parser.h>
 #include <keywords.h>
 #include <symtab.h>
+#include <macros.h>
 
 /*************************** LL(1) grammar definition ******************************
  *
@@ -274,15 +275,59 @@ void repstmt
 
 /***************************** LL(1) grammar emulation *****************************
  *
- * expr -> ['-'] term { addop term } */
-void expr (void)
+ * expr -> ['-'] term { addop term }
+ */
+/*
+ * OP     |  BOOLEAN  | NUMERIC | 
+ * =============================
+ * NOT    |     X     |    -    |
+ * OR     |     X     |    -    |
+ * AND    |     X     |    -    |
+ * CHS    |     -     |    X    |    // negate CHS CHangeSignal
+ * '+''-' |     -     |    X    |
+ * '*''/' |     -     |    X    |
+ * DIV    |     -     | INTEGER |
+ * MOD    |     -     | INTEGER |
+ * RELOP  |BOOL x BOOL|NUM x NUM|
+ *
+ *
+ * EXPRESS|  INTEGER  |   REAL  | DOUBLE |
+ * ===================================
+ * INTEGER|  INTEGER  |   REAL  | DOUBLE |
+ * REAL   |    REAL   |   REAL  | DOUBLE |
+ * DOUBLE |  DOUBLE   |  DOUBLE | DOUBLE |
+ *
+ *
+ * LVALUE |  BOOLEAN  | INTEGER |  REAL  | DOUBLE |
+ * =============================================
+ * BOOLEAN|  BOOLEAN  |    -    |   -    |   -    |
+ * INTEGER|     -     | INTEGER |  CAST  |   -    |
+ * REAL   |     -     |   REAL  |  REAL  |  REAL  |
+ * DOUBLE |     -     |  DOUBLE | DOUBLE | DOUBLE |
+ *
+ */
+void expr (nt inherited_type)
 {
-    /*[[*/ int varlocality, lvalue = 0; /*]]*/ 
+    /*[[*/ int varlocality, lvalue = 0, acctype = inherited_type, syntype; /*]]*/ 
 	int p_count = 0;
 	if(lookahead == '-') {
 		match('-');
+		/*[[*/
+		if(acctype == BOOLEAN) {
+			fprintf(stderr,"incompatible unary operator: FATAL ERROR.\n");
+			// TODO: need to set a flag to this fatal error
+		} else if(acctype == 0){
+			acctype = INTEGER;
+		}
+		/*]]*/
 	} else if (lookahead == NOT) {
 		match(NOT);
+		/*[[*/
+		if(acctype > BOOLEAN) {
+			fprintf(stderr,"incompatible unary operator: FATAL ERROR.\n");
+		}
+		acctype = BOOLEAN;
+		/*]]*/
 	}
 	E_entry:	
 	T_entry:
@@ -290,25 +335,26 @@ void expr (void)
 		switch (lookahead) {
 			case ID:
 				/*[[*/ varlocality = symtab_lookup(lexeme);
-                if (varlocality < 0) {
-                    fprintf(stderr, "parser: %s not declared - fatal error!\n", lexeme);
-                    //TODO: need to set a flag to this fatal error
-                }
-                /*]]*/
+                		if (varlocality < 0) {
+		                    fprintf(stderr, "parser: %s not declared - fatal error!\n", lexeme);
+                		    //TODO: need to set a flag to this fatal error
+		                }
+                		/*]]*/
 				match (ID);
 				if (lookahead == ASGN) { //ASGN = ":="
 					/* located variable is LVALUE */
-                    /*[[*/ lvalue = 1; /*[[*/ 
-                    match(ASGN);
+			                /*[[*/ lvalue = 1; /*[[*/ 
+		                        match(ASGN);
 					expr();
 				}
-                /*[[*/
-                else if(varlocality > -1) {
-                    fprintf(object,"\tpushl %%eax\n\tmov %s,%%eax\n",
-                    symtab_stream + symtab[varlocality][0]);
-                }
-                /*]]*/
+		                /*[[*/
+		                else if(varlocality > -1) {
+                		    fprintf(object,"\tpushl %%eax\n\tmov %s,%%eax\n",
+		                    symtab_stream + symtab[varlocality][0]);
+		                }
+                		/*]]*/
 				break;
+/* BEGIN ERALDO NÂO TEM ESSA PARTE */
 			case NUM:
 				printf("decimal: %c", lookahead);
 				match (NUM);
@@ -325,6 +371,23 @@ void expr (void)
 				if(p_count < 0) {printf("MISSING (\n"); exit(0);}
 				goto T_entry;
 				break;			
+/* FIM ERALDO NÂO TEM ESSA PARTE */
+			case FLTCONST:
+				match(FLTCONST);
+				break;
+			case INTCONST:
+				match(INTCONST);
+				break;
+			default:
+				match('(');
+				/*[[*/syntype = /*]]*/expr();
+				/*[[*/if(iscompatible(syntype, acctype){
+					acctype = max(acctype, syntype);
+				} else {
+					fprintf(stderr, "parenthesizes type incompatible with accumulated");
+				}/*]]*/
+				match(')');
+
 		}
 	if(mulop()) goto F_entry;
 	if(addop()) goto T_entry;
