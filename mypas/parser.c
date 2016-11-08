@@ -8,6 +8,7 @@
 #include <parser.h>
 #include <keywords.h>
 #include <symtab.h>
+#include <macros.h>
 
 /*************************** LL(1) grammar definition ******************************
  *
@@ -274,6 +275,7 @@ void repstmt
 
 /***************************** LL(1) grammar emulation *****************************
  *
+<<<<<<< HEAD
  * expr -> ['-'] term { addop term } */
  /*
   * OP  | BOOLEAN | NUMERIC | 
@@ -284,11 +286,61 @@ void repstmt
 int expr (int inherited_type)
 {
     /*[[*/ int varlocality, lvalue = 0, acctype = inherited_type, syntype, ltype, rtype; /*]]*/ 
+=======
+ * expr -> ['-'] term { addop term }
+ */
+/*
+ * OP     |  BOOLEAN  | NUMERIC | 
+ * =============================
+ * NOT    |     X     |    -    |
+ * OR     |     X     |    -    |
+ * AND    |     X     |    -    |
+ * CHS    |     -     |    X    |    // negate CHS CHangeSignal
+ * '+''-' |     -     |    X    |
+ * '*''/' |     -     |    X    |
+ * DIV    |     -     | INTEGER |
+ * MOD    |     -     | INTEGER |
+ * RELOP  |BOOL x BOOL|NUM x NUM|
+ *
+ *
+ * EXPRESS|  INTEGER  |   REAL  | DOUBLE |
+ * ===================================
+ * INTEGER|  INTEGER  |   REAL  | DOUBLE |
+ * REAL   |    REAL   |   REAL  | DOUBLE |
+ * DOUBLE |  DOUBLE   |  DOUBLE | DOUBLE |
+ *
+ *
+ * LVALUE |  BOOLEAN  | INTEGER |  REAL  | DOUBLE |
+ * =============================================
+ * BOOLEAN|  BOOLEAN  |    -    |   -    |   -    |
+ * INTEGER|     -     | INTEGER |  CAST  |   -    |
+ * REAL   |     -     |   REAL  |  REAL  |  REAL  |
+ * DOUBLE |     -     |  DOUBLE | DOUBLE | DOUBLE |
+ *
+ */
+void expr (nt inherited_type)
+{
+    /*[[*/ int varlocality, lvalue = 0, acctype = inherited_type, syntype; /*]]*/ 
+>>>>>>> d3cbfe8b7de001d4c23331cd35a8305b48519db6
 	int p_count = 0;
 	if(lookahead == '-') {
 		match('-');
+		/*[[*/
+		if(acctype == BOOLEAN) {
+			fprintf(stderr,"incompatible unary operator: FATAL ERROR.\n");
+			// TODO: need to set a flag to this fatal error
+		} else if(acctype == 0){
+			acctype = INTEGER;
+		}
+		/*]]*/
 	} else if (lookahead == NOT) {
 		match(NOT);
+		/*[[*/
+		if(acctype > BOOLEAN) {
+			fprintf(stderr,"incompatible unary operator: FATAL ERROR.\n");
+		}
+		acctype = BOOLEAN;
+		/*]]*/
 	}
 	E_entry:	
 	T_entry:
@@ -322,6 +374,7 @@ int expr (int inherited_type)
                 }
                 /*]]*/
 				break;
+/* BEGIN ERALDO NÂO TEM ESSA PARTE */
 			case NUM:
 				printf("decimal: %c", lookahead);
 				match (NUM);
@@ -338,6 +391,23 @@ int expr (int inherited_type)
 				if(p_count < 0) {printf("MISSING (\n"); exit(0);}
 				goto T_entry;
 				break;			
+/* FIM ERALDO NÂO TEM ESSA PARTE */
+			case FLTCONST:
+				match(FLTCONST);
+				break;
+			case INTCONST:
+				match(INTCONST);
+				break;
+			default:
+				match('(');
+				/*[[*/syntype = /*]]*/expr();
+				/*[[*/if(iscompatible(syntype, acctype){
+					acctype = max(acctype, syntype);
+				} else {
+					fprintf(stderr, "parenthesizes type incompatible with accumulated");
+				}/*]]*/
+				match(')');
+
 		}
 	if(mulop()) goto F_entry;
 	if(addop()) goto T_entry;
