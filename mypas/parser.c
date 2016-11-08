@@ -275,9 +275,15 @@ void repstmt
 /***************************** LL(1) grammar emulation *****************************
  *
  * expr -> ['-'] term { addop term } */
-void expr (void)
+ /*
+  * OP  | BOOLEAN | NUMERIC | 
+  * NOT |    X
+  * OR  |
+  * AND |
+  */
+int expr (int inherited_type)
 {
-    /*[[*/ int varlocality, lvalue = 0; /*]]*/ 
+    /*[[*/ int varlocality, lvalue = 0, acctype = inherited_type, syntype, ltype, rtype; /*]]*/ 
 	int p_count = 0;
 	if(lookahead == '-') {
 		match('-');
@@ -293,17 +299,24 @@ void expr (void)
                 if (varlocality < 0) {
                     fprintf(stderr, "parser: %s not declared - fatal error!\n", lexeme);
                     //TODO: need to set a flag to this fatal error
+                } else {
+                    syntype = symtab[varlocality][1];
                 }
                 /*]]*/
 				match (ID);
 				if (lookahead == ASGN) { //ASGN = ":="
 					/* located variable is LVALUE */
-                    /*[[*/ lvalue = 1; /*[[*/ 
+                    /*[[*/ lvalue = 1; 
+                    ltype = syntype;
+                    /*[[*/ 
                     match(ASGN);
-					expr();
+					/*[[*/
+                    rtype = 
+                    /*]]*/
+                    expr(/*[[*/ltype/*]]*/);
 				}
                 /*[[*/
-                else if(varlocality > -1) {
+                else if(varlocality > -1) {  //TODO: this is really necessary
                     fprintf(object,"\tpushl %%eax\n\tmov %s,%%eax\n",
                     symtab_stream + symtab[varlocality][0]);
                 }
@@ -354,6 +367,8 @@ int addop (void)
 			match('+'); return '+';
 	case '-':
 			match('-'); return '-';
+    case OR:
+        match(OR); return OR;
 	}
 	return 0;
 }
@@ -369,8 +384,6 @@ int mulop (void)
 			match('/'); return '/';
 		case AND:
 			match(AND); return AND;
-		case OR:
-			match(OR); return OR;
 	}
 	return 0;
 }

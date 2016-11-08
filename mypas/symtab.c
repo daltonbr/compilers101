@@ -8,8 +8,7 @@ int symtab_nextentry = 0;
 #define 	VAR_ALREADY_EXISTS	-3
 #define		SYMTAB_OVERFLOW		-2
 #define		SUCCESS			 1
-int
-symtab_lookup(char const *name)
+int symtab_lookup(char const *name)
 {
 	int i;
 	for (i = symtab_nextentry-1; i > -1; i--){
@@ -18,8 +17,7 @@ symtab_lookup(char const *name)
 	return i;
 }
 
-int
-symtab_append(char const *name, int type)
+int symtab_append(char const *name, int type)
 {
 	if(symtab_lookup(name) >= 0)
 		return VAR_ALREADY_EXISTS;

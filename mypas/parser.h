@@ -23,3 +23,6 @@ void quoc (void);
 void fact (void);
 int addop (void);
 int mulop (void);
+void parmdef(void);
+void fnctype(void);
+int iscompatible(int, int);
