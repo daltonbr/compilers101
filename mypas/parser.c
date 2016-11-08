@@ -69,11 +69,19 @@ void stmt(void)
 		case REPEAT:
 			repstmt();
 			break;
-		case ID: case NUM: case'(':
-			expr();
+		case NUM:    // Eraldo não tem essa linha
+		case ID:	// hereafter we expect FIRST(expr)
+		case FLTCONST:
+		case INTCONST:
+		case TRUE:	// TODO: colocar isso no analisador lexico
+		case FALSE:	// TODO: isso também
+		case NOT:
+		case '-':
+		case '(':
+			expr(0);
 			break;
 		default:
-			; /*<empty>*/
+			/*<epsilon>*/;    // Emulating empty word
 	}
 }
 
@@ -213,14 +221,16 @@ void fnctype(void)
  */
 void ifstmt(void)
 {
+	int syntype;
 	match(IF);
 	printf("after match \n: %c", lookahead);
-	expr();
+	syntype = superexpr(BOOLEAN); // TODO: check if is boolean
+//	if(superexpr(BOOLEAN) < 0) // deu pau
 	match(THEN);
-	body();
+	body(); // eraldo colocou stmt(); mas não tem o ELIF
 	while (lookahead == ELIF) {
 		match(ELIF);
-		expr();
+		superexpr();
 		match(THEN);
 		body();
 	}
@@ -236,7 +246,7 @@ void ifstmt(void)
  */
 void whilestmt(void)
 {
-	match(WHILE); expr();
+	match(WHILE); superexpr();
 	match(DO); body();
 	match(DONE);
 }
@@ -248,7 +258,7 @@ void repstmt
 {
 	(void)printf("ID: %c", lookahead);
 
-	match(DO); body(); match(WHILE); expr();
+	match(DO); body(); match(WHILE); superexpr();
 }
 
 /*
@@ -314,13 +324,83 @@ int expr (int inherited_type)
  * =============================================
  * BOOLEAN|  BOOLEAN  |    -    |   -    |   -    |
  * INTEGER|     -     | INTEGER |  CAST  |   -    |
- * REAL   |     -     |   REAL  |  REAL  |  REAL  |
+ * REAL   |     -     |   REAL  |  REAL  |   -    |
  * DOUBLE |     -     |  DOUBLE | DOUBLE | DOUBLE |
  *
  */
-void expr (nt inherited_type)
+
+int iscompatible(int ltype, int rtype)
 {
-    /*[[*/ int varlocality, lvalue = 0, acctype = inherited_type, syntype; /*]]*/ 
+	switch(ltype) {
+		case BOOLEAN:
+			if(rtype == ltype) {
+				return ltype;
+			}
+			break;
+		case INTEGER:
+			if(rtype = ltype) {
+				return ltype;
+			}
+			break;
+		case REAL:
+			switch(rtype) {
+				case INTEGER:
+				case REAL:
+					return ltype;
+			}
+			break;
+		case DOUBLE:
+			switch(rtype) {
+				case INTEGER:
+				case REAL:
+				case DOUBLE:
+					return ltype;
+			}
+	}
+	return 0;
+}
+
+void isrelop()
+{
+	switch(lookahead) {
+		case '>':
+			match('>');  // match é para sintaxe! Análise léxica não se usa match
+			if(lookahead == '='){
+				match('=');
+				return GEQ;
+			}
+			return '>';
+		case '<':
+			match('<');
+			if(lookahead == '='){
+				match('=');
+				return LEQ;
+			}else if(lookahead == '>'){
+				match('>');
+				return NEQ;
+			}
+			return '<';
+		case '=':
+			match('=');
+			return '=';
+	}
+	return 0;
+}
+
+/* syntax: superexpr -> expr [ relop expr ]*/
+int superexpr(int inherited_type)
+{
+	int t1, t2;
+	t1 = expr(inherited_type);
+	if(isrelop()) {
+		t2 = expr(t1);
+		// TODO: check compatibility 
+	}
+	return min(BOOLEAN,t2);
+}
+void expr (int inherited_type)
+{
+    /*[[*/ int varlocality, lvalue_seen = 0, acctype = inherited_type, syntype; /*]]*/ 
 >>>>>>> d3cbfe8b7de001d4c23331cd35a8305b48519db6
 	int p_count = 0;
 	if(lookahead == '-') {
@@ -348,31 +428,40 @@ void expr (nt inherited_type)
 		switch (lookahead) {
 			case ID:
 				/*[[*/ varlocality = symtab_lookup(lexeme);
-                if (varlocality < 0) {
-                    fprintf(stderr, "parser: %s not declared - fatal error!\n", lexeme);
-                    //TODO: need to set a flag to this fatal error
-                } else {
-                    syntype = symtab[varlocality][1];
-                }
-                /*]]*/
+		                if (varlocality < 0) {
+                			fprintf(stderr, "parser: %s not declared - fatal error!\n", lexeme);
+					syntype = -1;
+					//TODO: need to set a flag to this fatal error
+		                } else {
+					syntype = symtab[varlocality][1];
+		                }
+		                /*]]*/
 				match (ID);
-				if (lookahead == ASGN) { //ASGN = ":="
-					/* located variable is LVALUE */
-                    /*[[*/ lvalue = 1; 
-                    ltype = syntype;
-                    /*[[*/ 
-                    match(ASGN);
+				if (lookahead == ASGN) { 		//ASGN = ":="
+					/* located variable is LTYPE */
+					/*[[*/ 
+					lvalue_seen = 1; // TODO: declare this locally
+					ltype = syntype;
+			                /*]]*/ 
+		                        match(ASGN);
 					/*[[*/
-                    rtype = 
-                    /*]]*/
-                    expr(/*[[*/ltype/*]]*/);
+		                        rtype = 
+                    			/*]]*/
+					superexpr(/*[[*/ltype/*]]*/);
+					/*[[*/
+					if(iscompatible(ltype, rtype)){
+						acctype = max(rtype,acctype);
+					}else{
+						acctype = -1; // sintax error
+					}
+					/*]]*/
 				}
-                /*[[*/
-                else if(varlocality > -1) {  //TODO: this is really necessary
-                    fprintf(object,"\tpushl %%eax\n\tmov %s,%%eax\n",
-                    symtab_stream + symtab[varlocality][0]);
-                }
-                /*]]*/
+		                /*[[*/
+                		else if(varlocality > -1) {  //TODO: this is really necessary
+		                    fprintf(object,"\tpushl %%eax\n\tmov %s,%%eax\n",
+	                		    symtab_stream + symtab[varlocality][0]);
+		                }
+		                /*]]*/
 				break;
 /* BEGIN ERALDO NÂO TEM ESSA PARTE */
 			case NUM:
@@ -400,7 +489,7 @@ void expr (nt inherited_type)
 				break;
 			default:
 				match('(');
-				/*[[*/syntype = /*]]*/expr();
+				/*[[*/syntype = /*]]*/superexpr();
 				/*[[*/if(iscompatible(syntype, acctype){
 					acctype = max(acctype, syntype);
 				} else {
