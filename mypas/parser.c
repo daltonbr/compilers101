@@ -216,16 +216,20 @@ void fnctype(void)
 			match( BOOLEAN);
 }
 
+int labelcounter = 1;		// global var to label in machine code
+
 /*
  *ifstmt -> IF expr THEN body { ELIF expr THEN body } [ ELSE body ] ENDIF      // { é para fecho de klein  e [ é para opcionalidade (0 ou 1)
  */
 void ifstmt(void)
 {
 	int syntype;
+	int _endif, _else;
 	match(IF);
 	printf("after match \n: %c", lookahead);
 	syntype = superexpr(BOOLEAN); // TODO: check if is boolean
 //	if(superexpr(BOOLEAN) < 0) // deu pau
+	fprintf(object,"\tjz .L%d\n", _endif = _else = labelcounter++);
 	match(THEN);
 	body(); // eraldo colocou stmt(); mas não tem o ELIF
 	while (lookahead == ELIF) {
@@ -236,9 +240,12 @@ void ifstmt(void)
 	}
 	if(lookahead == ELSE) {
 		match(ELSE);
+		fprintf(object,"\tjmp .L%d\n", _endif = labelcounter++);
+		fprintf(object,".L%d:\n", _else);
 		body();
 	}
 	match(ENDIF);
+	fprintf(object,".L%d:\n", _endif);
 }
 
 /*
@@ -285,18 +292,6 @@ void repstmt
 
 /***************************** LL(1) grammar emulation *****************************
  *
-<<<<<<< HEAD
- * expr -> ['-'] term { addop term } */
- /*
-  * OP  | BOOLEAN | NUMERIC | 
-  * NOT |    X
-  * OR  |
-  * AND |
-  */
-int expr (int inherited_type)
-{
-    /*[[*/ int varlocality, lvalue = 0, acctype = inherited_type, syntype, ltype, rtype; /*]]*/ 
-=======
  * expr -> ['-'] term { addop term }
  */
 /*
@@ -400,8 +395,7 @@ int superexpr(int inherited_type)
 }
 void expr (int inherited_type)
 {
-    /*[[*/ int varlocality, lvalue_seen = 0, acctype = inherited_type, syntype; /*]]*/ 
->>>>>>> d3cbfe8b7de001d4c23331cd35a8305b48519db6
+    /*[[*/ int varlocality, lvalue_seen = 0, acctype = inherited_type, syntype, ltype, rtype; /*]]*/ 
 	int p_count = 0;
 	if(lookahead == '-') {
 		match('-');
