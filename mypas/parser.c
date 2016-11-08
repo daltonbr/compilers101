@@ -275,18 +275,6 @@ void repstmt
 
 /***************************** LL(1) grammar emulation *****************************
  *
-<<<<<<< HEAD
- * expr -> ['-'] term { addop term } */
- /*
-  * OP  | BOOLEAN | NUMERIC | 
-  * NOT |    X
-  * OR  |
-  * AND |
-  */
-int expr (int inherited_type)
-{
-    /*[[*/ int varlocality, lvalue = 0, acctype = inherited_type, syntype, ltype, rtype; /*]]*/ 
-=======
  * expr -> ['-'] term { addop term }
  */
 /*
@@ -320,8 +308,7 @@ int expr (int inherited_type)
  */
 void expr (nt inherited_type)
 {
-    /*[[*/ int varlocality, lvalue = 0, acctype = inherited_type, syntype; /*]]*/ 
->>>>>>> d3cbfe8b7de001d4c23331cd35a8305b48519db6
+   /*[[*/ int varlocality, lvalue = 0, acctype = inherited_type, syntype, ltype, rtype; /*]]*/ 
 	int p_count = 0;
 	if(lookahead == '-') {
 		match('-');
