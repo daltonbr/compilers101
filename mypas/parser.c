@@ -48,9 +48,9 @@ int stmtsep(void)
 
 /*
  * stmt -> imperative
- * 	| IF expr THEN body { ELIF expr THEN body } [ ELSE body ] ENDIF
- * 	| WHILE expr DO body ENDDO 
- *	| DO body WHILE expr
+ * 	| IF expr THEN stmtlist { ELIF expr THEN stmtlist } [ ELSE stmtlist ] ENDIF
+ * 	| WHILE superexpr DO stmtlist 
+ *	| DO stmtlist WHILE superexpr
  *	| expr
  *	| <empty>
  */
@@ -69,7 +69,7 @@ void stmt(void)
 		case REPEAT:
 			repstmt();
 			break;
-		case NUM:    // Eraldo não tem essa linha
+		case INT:
 		case ID:	// hereafter we expect FIRST(expr)
 		case FLTCONST:
 		case INTCONST:
@@ -114,7 +114,7 @@ void declarative(void)
 			/*[[*/type = /*]]*/ vartype();
 			/*[[*/for(i=0; namev[i];i++)symtab_append(namev[i],type)/*]]*/;
 			match(';');
-		} while(lookeahead == ID);
+		} while(lookahead == ID);
 	}
 	while(lookahead == PROCEDURE || lookahead == FUNCTION) {
 		match(lookahead);
@@ -137,7 +137,7 @@ void
 imperative(void)
 {
 	match(BEGIN);
-	stmt();
+	stmtlist();
 	match(END);
 }
 
@@ -169,7 +169,7 @@ namelist(void)
 	/*[[*/char **symvec = calloc(MAX_ARG_NUM, sizeof(char **));
 	int i = 0/*]]*/;
 	_namelist_begin:
-	/*[[*/symvec[i] = malloc(sizeof(lexeme) + 1;
+	/*[[*/symvec[i] = malloc(strlen(lexeme) + 1); //TODO: strlen funciona? é pra pegar o tamanho do lexeme?
 	strcpy(symvec[i], lexeme);
 	i++/*]]*/;
 	match(ID);
@@ -228,33 +228,37 @@ void ifstmt(void)
 	match(IF);
 	printf("after match \n: %c", lookahead);
 	syntype = superexpr(BOOLEAN); // TODO: check if is boolean
-//	if(superexpr(BOOLEAN) < 0) // deu pau
-	fprintf(object,"\tjz .L%d\n", _endif = _else = labelcounter++);
+//	if(superexpr(BOOLEAN) < 0) // TODO: deu pau, escreve o erro tipo not boolean
+//	fprintf(object,"\tjz .L%d\n", _endif = _else = labelcounter++); TODO: criar arquivo object e descomentar os outros fprintf
 	match(THEN);
 	body(); // eraldo colocou stmt(); mas não tem o ELIF
 	while (lookahead == ELIF) {
 		match(ELIF);
-		superexpr();
+		syntype = superexpr(BOOLEAN);		
 		match(THEN);
 		body();
 	}
 	if(lookahead == ELSE) {
 		match(ELSE);
-		fprintf(object,"\tjmp .L%d\n", _endif = labelcounter++);
-		fprintf(object,".L%d:\n", _else);
+//		fprintf(object,"\tjmp .L%d\n", _endif = labelcounter++);
+//		fprintf(object,".L%d:\n", _else);
 		body();
 	}
 	match(ENDIF);
-	fprintf(object,".L%d:\n", _endif);
+//	fprintf(object,".L%d:\n", _endif);
 }
 
 /*
  * whilestmt -> ...
+ *	WHILE superexpr DO stmtlist 
  */
 void whilestmt(void)
 {
-	match(WHILE); superexpr();
-	match(DO); body();
+	int syntype;
+	match(WHILE); 
+	syntype = superexpr(BOOLEAN);
+//	if(superexpr(BOOLEAN) < 0) // TODO: deu pau, escreve o erro tipo not boolean
+	match(DO); stmt();
 	match(DONE);
 }
 
@@ -263,9 +267,12 @@ void whilestmt(void)
  */
 void repstmt
 {
+	int syntype;	
 	(void)printf("ID: %c", lookahead);
 
-	match(DO); body(); match(WHILE); superexpr();
+	match(DO); stmt(); match(WHILE); 
+	syntype = superexpr(BOOLEAN);
+//	if(superexpr(BOOLEAN) < 0) // TODO: deu pau, escreve o erro tipo not boolean
 }
 
 /*
@@ -483,7 +490,7 @@ void expr (int inherited_type)
 				break;
 			default:
 				match('(');
-				/*[[*/syntype = /*]]*/superexpr();
+				/*[[*/syntype = /*]]*/superexpr(0);
 				/*[[*/if(iscompatible(syntype, acctype){
 					acctype = max(acctype, syntype);
 				} else {

@@ -55,23 +55,23 @@ int isidentifier(FILE *dish)
         return 0;
 }
 //hoje
-int isnum(FILE *dish)
+int isint(FILE *dish)
 {
         if (isdigit (lexeme[0] = getc(dish)) ) {
                 if (lexeme[0] == '0') {
-                        return NUM;
+                        return INT;
                 }
                 // [0-9]*
                 while ( isdigit (lexeme[0] = getc(dish)) );
                 ungetc (lexeme[0], dish);
-                return NUM;
+                return INT;
         }
         ungetc (lexeme[0], dish);
         return 0;
 }
 //-hoje
 
-int isoctal(FILE *dish)
+/*int isoctal(FILE *dish)
 {
         int octpref = getc(dish);
         if (octpref == '0') {
@@ -88,7 +88,7 @@ int isoctal(FILE *dish)
         }
         ungetc (octpref, dish);
         return 0;
-}
+}*/
 
 int gettoken (FILE *sourcecode)
 {
@@ -100,8 +100,8 @@ int gettoken (FILE *sourcecode)
                 return ID;
         }
 
-        if ( token = isdecimal (sourcecode) ) {
-                return DEC;
+        if ( token = isint (sourcecode) ) {
+                return INT;
         }
 	
 	lexeme[1] = 0;
