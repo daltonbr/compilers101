@@ -230,6 +230,7 @@ void ifstmt(void)
 	syntype = superexpr(BOOLEAN); // TODO: check if is boolean
 //	if(superexpr(BOOLEAN) < 0) // TODO: deu pau, escreve o erro tipo not boolean
 //	fprintf(object,"\tjz .L%d\n", _endif = _else = labelcounter++); TODO: criar arquivo object e descomentar os outros fprintf
+	_endif = _else = gofalse(labelcounter++);
 	match(THEN);
 	body(); // eraldo colocou stmt(); mas não tem o ELIF
 	while (lookahead == ELIF) {
@@ -242,10 +243,14 @@ void ifstmt(void)
 		match(ELSE);
 //		fprintf(object,"\tjmp .L%d\n", _endif = labelcounter++);
 //		fprintf(object,".L%d:\n", _else);
+		_endif = jump(labelcounter++);
+		mklabel(_else);
+		/**/
 		body();
 	}
 	match(ENDIF);
 //	fprintf(object,".L%d:\n", _endif);
+	mklabel(_endif);
 }
 
 /*
@@ -255,11 +260,35 @@ void ifstmt(void)
 void whilestmt(void)
 {
 	int syntype;
+	/**/int while_head, while_tail/**/;
+	
 	match(WHILE); 
+	/**/mklabel(while_head = labelcounter++);   /// cria a cabeça do while -> faz o ponto de entrada do while
 	syntype = superexpr(BOOLEAN);
 //	if(superexpr(BOOLEAN) < 0) // TODO: deu pau, escreve o erro tipo not boolean
+	/**/gofalse(while_tail)/**/;
 	match(DO); stmt();
+	/**/jump(while_head = labelcounter++)/**/;
+	/**/mklabel(while_tail)/**/;// aqui vai a saída do while
 	match(DONE);
+	/*
+	 *    | while |
+	 *        |
+	 *        v--<---
+	 *       / \     |
+	 *  --- /exp\    |
+	 * |    \   /    |
+	 * |     \ /     |
+	 * |      |      |
+	 * |      v      |
+	 * |   | stmt |  |
+	 * |      |      |
+	 * |      -------
+	 * |
+	 *  ------
+	 *       |
+	 *       v
+	 * | end-while |
 }
 
 /*
@@ -483,6 +512,12 @@ void expr (int inherited_type)
 				break;			
 /* FIM ERALDO NÂO TEM ESSA PARTE */
 			case FLTCONST:
+				{
+					float lexval = atof(lexeme);
+					char *fltIEEE = maloc(sizeof(lexeme)+1);
+					sprintf(fltIEEE, "$%i", *((int *)&lexval));
+					rmovel(fltIEEE);
+				}
 				match(FLTCONST);
 				break;
 			case INTCONST:
@@ -506,8 +541,18 @@ void expr (int inherited_type)
 		printf("MISSING )\n");
 
     /* expression ends down here */
-    /*[[*/ if (varlocality > -1 && lvalue) { 
-    fprintf(object, "\tmovl %%eax,%s\n", symtab_stream + symtab[varlocality][0]);
+    /*[[*/ if (lvalue_seen && rlocality > -1) {
+		switch(ltype){
+			case INTEGER:case REAL:
+				lmovel(symtab_stream + symtab[varlocality[0]);
+				break;
+			case DOUBLE:
+				lmoveq(symtab_stream + symtab[varlocality[0]);
+				break;
+			default:
+				; // desenvolver algo aqui
+		}
+
     /*]]*/  
 }
 /*
