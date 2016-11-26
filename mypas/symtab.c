@@ -1,5 +1,8 @@
 /**@<symtab.c>::**/
 
+#define		MAX_SYMTAB_ENTRIES	 0x10000
+#define		MAXID_SIZE	 32
+
 int symtab[MAX_SYMTAB_ENTRIES][2];			// onde está o tipo da variável
 char symtab_stream[MAX_SYMTAB_ENTRIES*(MAXID_SIZE+1)];  // onde está o nome da variável
 int symtab_stream_next_descriptor = 0;
