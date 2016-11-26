@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+
 #include <tokens.h>
 #include <parser.h>
 #include <keywords.h>
@@ -67,7 +68,7 @@ void stmt(void)
 			whilestmt();
 			break;
 		case REPEAT:
-			repstmt();
+			repeatstmt();
 			break;
 		case INT:
 		case ID:	// hereafter we expect FIRST(expr)
@@ -552,6 +553,7 @@ void expr (int inherited_type)
 			default:
 				; // desenvolver algo aqui
 		}
+    }
 
     /*]]*/  
 }
