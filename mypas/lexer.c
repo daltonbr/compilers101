@@ -1,28 +1,24 @@
 /**@<lexer.c>::**/
 
-/*
-
-1: Tue Aug 16 20:49:40 BRT 2016
-
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+
 #include <tokens.h>
 #include <keywords.h>
 
 #define MAXID_SIZE	32
 char lexeme[MAXID_SIZE+1];
 
-void skipspaces (FILE *dish)
+void skipspaces (FILE *tape)
 {
-	lexeme[0] = getc(dish);
-        while ( lexeme[0] != '\n' && isspace (lexeme[0]) ) {
-		lexeme[0] = getc(dish);
+    
+	lexeme[0] = getc(tape);
+    while ( lexeme[0] != '\n' && isspace (lexeme[0]) ) {
+        lexeme[0] = getc(tape);
 	}  // enquanto não atingir o fim de arquivo
 
-        ungetc ( lexeme[0], dish );
+        ungetc ( lexeme[0], tape );
 }
 
 //hoje
@@ -40,53 +36,53 @@ int isassign (FILE * tape)
 }
 //-hoje
 
-int isidentifier(FILE *dish)
+int isidentifier(FILE *tape)
 {
 	int token;
 
-	if (isalpha (lexeme[0] = getc(dish)) ) {
-                for(token = 1; isalnum (lexeme[token] = getc(dish)); token < MAXID_SIZE ? token++ : token);
-                ungetc (lexeme[token], dish);
+	if (isalpha (lexeme[0] = getc(tape)) ) {
+                for(token = 1; isalnum (lexeme[token] = getc(tape)); token < MAXID_SIZE ? token++ : token);
+                ungetc (lexeme[token], tape);
 		lexeme[token] = 0;
 		if(token = iskeyword(lexeme)) return token;
                 return ID;
         }
-        ungetc (lexeme[0], dish);
+        ungetc (lexeme[0], tape);
         return 0;
 }
 //hoje
-int isint(FILE *dish)
+int isint(FILE *tape)
 {
-        if (isdigit (lexeme[0] = getc(dish)) ) {
+        if (isdigit (lexeme[0] = getc(tape)) ) {
                 if (lexeme[0] == '0') {
                         return INT;
                 }
                 // [0-9]*
-                while ( isdigit (lexeme[0] = getc(dish)) );
-                ungetc (lexeme[0], dish);
+                while ( isdigit (lexeme[0] = getc(tape)) );
+                ungetc (lexeme[0], tape);
                 return INT;
         }
-        ungetc (lexeme[0], dish);
+        ungetc (lexeme[0], tape);
         return 0;
 }
 //-hoje
 
-/*int isoctal(FILE *dish)
+/*int isoctal(FILE *tape)
 {
-        int octpref = getc(dish);
+        int octpref = getc(tape);
         if (octpref == '0') {
-                lexeme[0] = getc(dish);
+                lexeme[0] = getc(tape);
                 if ( lexeme[0] >= '0' && lexeme[0] <= '7') {
-                        while ( (lexeme[0] = getc(dish)) >= '0' && lexeme[0] <= '7');
-                        ungetc (lexeme[0], dish);
+                        while ( (lexeme[0] = getc(tape)) >= '0' && lexeme[0] <= '7');
+                        ungetc (lexeme[0], tape);
                         return OCTAL;
                 } else {
-                        ungetc (lexeme[0], dish);
-                        ungetc (octpref, dish);
+                        ungetc (lexeme[0], tape);
+                        ungetc (octpref, tape);
                         return 0;
                 }
         }
-        ungetc (octpref, dish);
+        ungetc (octpref, tape);
         return 0;
 }*/
 
