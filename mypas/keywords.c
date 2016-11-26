@@ -4,7 +4,31 @@
 
 
 char *keywords[] = {
-        "if", "then", "elif", "else", "endif", "while", "do", "repeat", "until", "procedure", "function", "var", "boolean", "integer", "real", "double", "div", "mod", "and", "or", "not", "true", "false", "end"
+        "begin",
+        "if",
+        "then",
+        "elif",
+        "else",
+        "endif",
+        "while",
+        "do",
+        "repeat",
+        "until",
+        "procedure",
+        "function",
+        "var",
+        "boolean",
+        "integer",
+        "real",
+        "double",
+        "div",
+        "mod",
+        "and",
+        "or",
+        "not",
+        "true",
+        "false",
+        "end"
 };
 
 int iskeyword(char const *identifier)
