@@ -89,6 +89,30 @@ void stmt(void)
 	}
 }
 
+void stmtlist(void)
+{
+	_stmtlist_begin:
+	stmt();
+	if(lookahead == ';') {
+		match(';');
+		goto _stmtlist_begin;
+	}
+}
+
+void vartype(void)
+{
+	switch(lookahead){
+		case INTEGER:
+			match(INTEGER);
+			break;
+		case REAL:
+			match(REAL);
+			break;
+		default:
+			match( BOOLEAN);
+    }
+}
+
 /*
  * WRITE -> WRITE ( " string " )
  */
@@ -182,30 +206,6 @@ namelist(void)
 		goto _namelist_begin;
 	}
 	/*[[*/return symvec;/*]]*/
-}
-
-void stmtlist(void)
-{
-	_stmtlist_begin:
-	stmt();
-	if(lookahead == ';') {
-		match(';');
-		goto _stmtlist_begin;
-	}
-}
-
-void vartype(void)
-{
-	switch(lookahead){
-		case INTEGER:
-			match(INTEGER);
-			break;
-		case REAL:
-			match(REAL);
-			break;
-		default:
-			match( BOOLEAN);
-    }
 }
 
 void fnctype(void)
