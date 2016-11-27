@@ -12,7 +12,7 @@
 #include <macros.h>
 #include <pseudoassembly.h>
 
-FILE *source, *object;
+FILE *source, *object, *stderr;
 
 /*************************** LL(1) grammar definition ******************************
  *
@@ -516,7 +516,7 @@ void expr (int inherited_type)
 			case FLTCONST:
 				{
 					float lexval = atof(lexeme);
-					char *fltIEEE = maloc(sizeof(lexeme)+1);
+					char *fltIEEE = malloc(strlen(lexeme) + 1);
 					sprintf(fltIEEE, "$%i", *((int *)&lexval));
 					rmovel(fltIEEE);
 				}
@@ -544,13 +544,13 @@ void expr (int inherited_type)
 		printf("MISSING )\n");
 
     /* expression ends down here */
-    /*[[*/ if (lvalue_seen && rlocality > -1) {
+    /*[[*/ if (lvalue_seen && varlocality > -1) {
 		switch(ltype){
 			case INTEGER:case REAL:
-				lmovel(symtab_stream + symtab[varlocality[0]]);
+				lmovel(symtab_stream + symtab[varlocality][0]);
 				break;
 			case DOUBLE:
-				lmoveq(symtab_stream + symtab[varlocality[0]]);
+				lmoveq(symtab_stream + symtab[varlocality][0]);
 				break;
 			default:
 				; // desenvolver algo aqui
