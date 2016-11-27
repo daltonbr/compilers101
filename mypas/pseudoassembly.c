@@ -115,11 +115,11 @@ int adddbl(void)
  * 	movsd	%xmm0, %rax
  * 	addq 	$8, %rsp
  */
-	fprintf(object, "\tmovsd   (%%rsp), %%xmm1\n");
-	fprintf(object, "\tmovsd   %%rax, %%xmm0\n");
-	fprintf(object, "\taddsd   %%xmm1, %%xmm0\n");
-	fprintf(object, "\tmovsd   %%xmm0, %%rax\n");
-	fprintf(object, "\taddq    $8, %%rsp\n");
+	fprintf(object, "\tmovsd (%%rsp), %%xmm1\n");
+	fprintf(object, "\tmovsd %%rax, %%xmm0\n");
+	fprintf(object, "\taddsd %%xmm1, %%xmm0\n");
+	fprintf(object, "\tmovsd %%xmm0, %%rax\n");
+	fprintf(object, "\taddq $8, %%rsp\n");
 
 	return 0;
 }
