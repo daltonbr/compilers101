@@ -4,7 +4,9 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-
+#include <lexer.h>
+#include <mypas.h>
+#include <pseudoassembly.h>
 #include <tokens.h>
 #include <parser.h>
 #include <keywords.h>
@@ -36,7 +38,15 @@ void body(void)
 	imperative();
 }
 
-
+void stmtlist(void)
+{
+	_stmtlist_begin:
+	stmt();
+	if(lookahead == ';') {
+		match(';');
+		goto _stmtlist_begin;
+	}
+}
 
 /*
  * stmtsep -> ; | EOL
@@ -97,20 +107,6 @@ void stmtlist(void)
 		match(';');
 		goto _stmtlist_begin;
 	}
-}
-
-void vartype(void)
-{
-	switch(lookahead){
-		case INTEGER:
-			match(INTEGER);
-			break;
-		case REAL:
-			match(REAL);
-			break;
-		default:
-			match( BOOLEAN);
-    }
 }
 
 /*
@@ -206,6 +202,26 @@ namelist(void)
 		goto _namelist_begin;
 	}
 	/*[[*/return symvec;/*]]*/
+}
+
+int vartype(void)
+{
+	switch(lookahead){
+		case INTEGER:
+			match(INTEGER);
+            return INTEGER;
+			break;
+		case REAL:
+			match(REAL);
+            return REAL;
+			break;
+        case DOUBLE:
+            match(DOUBLE);
+            return DOUBLE;
+		default:
+			match( BOOLEAN);
+            return BOOLEAN;
+    }
 }
 
 void fnctype(void)
