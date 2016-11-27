@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-int i = 3;
+int i = 235;
 
 float x = 3.14159;
 
@@ -16,10 +16,3 @@ int main()
 
     return 0;
 }
-
-/*
-60
-32u = 2ˆ5 << 5
-64u = eax+eax 
--4u (4xsub)
-*/

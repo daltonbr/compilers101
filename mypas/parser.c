@@ -4,11 +4,14 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+
 #include <tokens.h>
 #include <parser.h>
 #include <keywords.h>
 #include <symtab.h>
 #include <macros.h>
+
+FILE *source, *object;
 
 /*************************** LL(1) grammar definition ******************************
  *
@@ -67,7 +70,7 @@ void stmt(void)
 			whilestmt();
 			break;
 		case REPEAT:
-			repstmt();
+			repeatstmt();
 			break;
 		case INT:
 		case ID:	// hereafter we expect FIRST(expr)
@@ -201,6 +204,7 @@ void vartype(void)
 			break;
 		default:
 			match( BOOLEAN);
+    }
 }
 
 void fnctype(void)
@@ -214,6 +218,7 @@ void fnctype(void)
 			break;
 		default:
 			match( BOOLEAN);
+    }
 }
 
 int labelcounter = 1;		// global var to label in machine code
@@ -270,7 +275,7 @@ void whilestmt(void)
 	match(DO); stmt();
 	/**/jump(while_head = labelcounter++)/**/;
 	/**/mklabel(while_tail)/**/;// aqui vai a saída do while
-	match(DONE);
+	match(END);
 	/*
 	 *    | while |
 	 *        |
@@ -289,12 +294,13 @@ void whilestmt(void)
 	 *       |
 	 *       v
 	 * | end-while |
+     */
 }
 
 /*
  * dostmt
  */
-void repstmt
+void repeatstmt(void)
 {
 	int syntype;	
 	(void)printf("ID: %c", lookahead);
@@ -391,7 +397,7 @@ int iscompatible(int ltype, int rtype)
 	return 0;
 }
 
-void isrelop()
+int isrelop()
 {
 	switch(lookahead) {
 		case '>':
@@ -429,6 +435,7 @@ int superexpr(int inherited_type)
 	}
 	return min(BOOLEAN,t2);
 }
+
 void expr (int inherited_type)
 {
     /*[[*/ int varlocality, lvalue_seen = 0, acctype = inherited_type, syntype, ltype, rtype; /*]]*/ 
@@ -439,16 +446,12 @@ void expr (int inherited_type)
 		if(acctype == BOOLEAN) {
 			fprintf(stderr,"incompatible unary operator: FATAL ERROR.\n");
 			// TODO: need to set a flag to this fatal error
-		} else if(acctype == 0){
-			acctype = INTEGER;
-		}
+		} else if(acctype == 0) acctype = INTEGER;
 		/*]]*/
 	} else if (lookahead == NOT) {
 		match(NOT);
 		/*[[*/
-		if(acctype > BOOLEAN) {
-			fprintf(stderr,"incompatible unary operator: FATAL ERROR.\n");
-		}
+		if(acctype > BOOLEAN) fprintf(stderr,"incompatible unary operator: FATAL ERROR.\n");
 		acctype = BOOLEAN;
 		/*]]*/
 	}
@@ -457,27 +460,25 @@ void expr (int inherited_type)
 	F_entry:
 		switch (lookahead) {
 			case ID:
-				/*[[*/ varlocality = symtab_lookup(lexeme);
-		                if (varlocality < 0) {
-                			fprintf(stderr, "parser: %s not declared - fatal error!\n", lexeme);
+				/*[[*/
+                varlocality = symtab_lookup(lexeme);
+                if (varlocality < 0) {
+                    fprintf(stderr, "parser: %s not declared - fatal error!\n", lexeme);
 					syntype = -1;
 					//TODO: need to set a flag to this fatal error
-		                } else {
+                } else {
 					syntype = symtab[varlocality][1];
-		                }
-		                /*]]*/
+                }
+                /*]]*/
 				match (ID);
 				if (lookahead == ASGN) { 		//ASGN = ":="
 					/* located variable is LTYPE */
 					/*[[*/ 
 					lvalue_seen = 1; // TODO: declare this locally
 					ltype = syntype;
-			                /*]]*/ 
-		                        match(ASGN);
-					/*[[*/
-		                        rtype = 
-                    			/*]]*/
-					superexpr(/*[[*/ltype/*]]*/);
+                    /*]]*/ 
+		            match(ASGN);
+					/*[[*/rtype = /*]]*/superexpr(/*[[*/ltype/*]]*/);
 					/*[[*/
 					if(iscompatible(ltype, rtype)){
 						acctype = max(rtype,acctype);
@@ -486,12 +487,12 @@ void expr (int inherited_type)
 					}
 					/*]]*/
 				}
-		                /*[[*/
-                		else if(varlocality > -1) {  //TODO: this is really necessary
-		                    fprintf(object,"\tpushl %%eax\n\tmov %s,%%eax\n",
-	                		    symtab_stream + symtab[varlocality][0]);
-		                }
-		                /*]]*/
+				/*[[*/
+                else if(varlocality > -1) {  //TODO: this is really necessary
+                    fprintf(object,"\tpushl %%eax\n\tmov %s,%%eax\n",
+	                symtab_stream + symtab[varlocality][0]);
+                }
+		        /*]]*/
 				break;
 /* BEGIN ERALDO NÂO TEM ESSA PARTE */
 			case NUM:
@@ -526,13 +527,14 @@ void expr (int inherited_type)
 			default:
 				match('(');
 				/*[[*/syntype = /*]]*/superexpr(0);
-				/*[[*/if(iscompatible(syntype, acctype){
+				/*[[*/
+                if(iscompatible(syntype, acctype)){
 					acctype = max(acctype, syntype);
 				} else {
 					fprintf(stderr, "parenthesizes type incompatible with accumulated");
-				}/*]]*/
+				}
+				/*]]*/
 				match(')');
-
 		}
 	if(mulop()) goto F_entry;
 	if(addop()) goto T_entry;
@@ -544,14 +546,15 @@ void expr (int inherited_type)
     /*[[*/ if (lvalue_seen && rlocality > -1) {
 		switch(ltype){
 			case INTEGER:case REAL:
-				lmovel(symtab_stream + symtab[varlocality[0]);
+				lmovel(symtab_stream + symtab[varlocality[0]]);
 				break;
 			case DOUBLE:
-				lmoveq(symtab_stream + symtab[varlocality[0]);
+				lmoveq(symtab_stream + symtab[varlocality[0]]);
 				break;
 			default:
 				; // desenvolver algo aqui
 		}
+    }
 
     /*]]*/  
 }
@@ -597,7 +600,7 @@ int mulop (void)
 int lookahead; // @ local
 
 void match (int expected)
- {
+{
 	 if ( expected == lookahead) {
 		 lookahead = gettoken (source);
 	 } else {
@@ -607,4 +610,4 @@ void match (int expected)
 		 	expected);
 		 exit (SYNTAX_ERR);
 	 }
- }
+}
