@@ -15,7 +15,7 @@ int jump(int label)
 
 int mklabel (int label)
 {
-    frprintf(object, ".L %d:\n", label);
+    fprintf(object, ".L %d:\n", label);
     return label;
 }
 
