@@ -11,6 +11,8 @@
 #include <symtab.h>
 #include <macros.h>
 
+FILE *source, *object;
+
 /*************************** LL(1) grammar definition ******************************
  *
  * mypas -> body EOF
@@ -273,7 +275,7 @@ void whilestmt(void)
 	match(DO); stmt();
 	/**/jump(while_head = labelcounter++)/**/;
 	/**/mklabel(while_tail)/**/;// aqui vai a saída do while
-	match(DONE);
+	match(END);
 	/*
 	 *    | while |
 	 *        |
@@ -395,7 +397,7 @@ int iscompatible(int ltype, int rtype)
 	return 0;
 }
 
-void isrelop()
+int isrelop()
 {
 	switch(lookahead) {
 		case '>':
@@ -433,6 +435,7 @@ int superexpr(int inherited_type)
 	}
 	return min(BOOLEAN,t2);
 }
+
 void expr (int inherited_type)
 {
     /*[[*/ int varlocality, lvalue_seen = 0, acctype = inherited_type, syntype, ltype, rtype; /*]]*/ 

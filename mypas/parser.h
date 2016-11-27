@@ -4,7 +4,7 @@ extern int lookahead; // @ local
 extern char lexeme[];
 extern int gettoken (FILE *); // @ lexer.c
 
-extern FILE *source; // @ main.c
+extern FILE *source, *object; // @ main.c
 
 extern void match (int); // @ local
 
