@@ -115,10 +115,10 @@ int adddbl(void)
  * 	movsd	%xmm0, %rax
  * 	addq 	$8, %rsp
  */
-	fprintf(object, "\tmovsd   xx(%rsp), %xmm1\n");
-	fprintf(object, "\tmovsd   %rax, %xmm0\n");
-	fprintf(object, "\taddsd   %xmm1, %xmm0\n");
-	fprintf(object, "\tmovsd   %xmm0, %rax\n");
+	fprintf(object, "\tmovsd   (%%rsp), %%xmm1\n");
+	fprintf(object, "\tmovsd   %%rax, %%xmm0\n");
+	fprintf(object, "\taddsd   %%xmm1, %%xmm0\n");
+	fprintf(object, "\tmovsd   %%xmm0, %%rax\n");
 	fprintf(object, "\taddq    $8, %%rsp\n");
 
 	return 0;
@@ -168,19 +168,20 @@ int subdbl(void)
  * 	movsd	%xmm0, %rax
  * 	addq 	$8, %rsp
  */
-	fprintf(object, "\tmovsd   xx(%rsp), %xmm1\n");
-	fprintf(object, "\tmovsd   %rax, %xmm0\n");
-	fprintf(object, "\tsubsd   %xmm1, %xmm0\n");
-	fprintf(object, "\tmovsd   %xmm0, %rax\n");
-	fprintf(object, "\taddq    $8, %%rsp\n");
+	fprintf(object, "\tmovsd (%%rsp), %%xmm1\n");
+	fprintf(object, "\tmovsd %%rax, %%xmm0\n");
+	fprintf(object, "\tsubsd %%xmm1, %%xmm0\n");
+	fprintf(object, "\tmovsd %%xmm0, %%rax\n");
+	fprintf(object, "\taddq $8, %%rsp\n");
 
 	return 0;
 }
-
+// and
 int mullog(void)
 {
 
 }
+
 
 int mulint(void)
 {
@@ -188,7 +189,7 @@ int mulint(void)
  * 	subl %eax, (%esp)
  * 	popl %eax
  */
-	fprintf(object, "\tsubl %%eax, (%%esp)\n");
+	fprintf(object, "\tmull %%eax, (%%esp)\n");
 	fprintf(object, "\tpopl %%eax\n");
 
 	return 0;
@@ -221,26 +222,35 @@ int muldbl(void)
  * 	movsd	%xmm0, %rax
  * 	addq 	$8, %rsp
  */
-	fprintf(object, "\tmovsd   xx(%rsp), %xmm1\n");
-	fprintf(object, "\tmovsd   %rax, %xmm0\n");
-	fprintf(object, "\tmulsd   %xmm1, %xmm0\n");
-	fprintf(object, "\tmovsd   %xmm0, %rax\n");
-	fprintf(object, "\taddq    $8, %%rsp\n");
+	fprintf(object, "\tmovsd (%%rsp), %%xmm1\n");
+	fprintf(object, "\tmovsd %%rax, %%xmm0\n");
+	fprintf(object, "\tmulsd %%xmm1, %%xmm0\n");
+	fprintf(object, "\tmovsd %%xmm0, %%rax\n");
+	fprintf(object, "\taddq $8, %%rsp\n");
 
 	return 0;
 }
 
 int divint(void)
 {
-
+    fprintf(object, "\tdivl (%%esp)\n");
+	fprintf(object, "\taddl $4, %%esp\n");
 }
 
 int divflt(void)
 {
-
+    fprintf(object, "\tmovss (%%rsp), %%xmm0\n");
+	fprintf(object, "\tmovss %%rax, %%xmm1\n");
+	fprintf(object, "\tdivss %%xmm1, %%xmm0\n");
+	fprintf(object, "\tmovss %%xmm0, %%rax\n");
+	fprintf(object, "\taddq $8, %%rsp\n");
 }
 
 int divdbl(void)
 {
-
+    fprintf(object, "\tmovsd (%%rsp), %%xmm0\n");
+	fprintf(object, "\tmovsd %%rax, %%xmm1\n");
+	fprintf(object, "\tdivsd %%xmm1, %%xmm0\n");
+	fprintf(object, "\tmovsd %%xmm0, %%rax\n");
+	fprintf(object, "\taddq $8, %%rsp\n");
 }

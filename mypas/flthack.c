@@ -8,8 +8,11 @@ double xx = 3.14159;
 
 int main()
 {
-	i = i * 601;
+	i = i * 60;
+    x = x * 60;
+    xx =-xx; 
+    
+    //printf("i = %i, x=%f, xx=%lf\n",i,x,xx);
 
-	return 0;
+    return 0;
 }
-
