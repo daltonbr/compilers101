@@ -1,5 +1,7 @@
 /**@<pseudoassembly.h>::**/
 
+extern FILE *object; // @ main.c
+
 int lmovel(char const *variable);
 int lmoveq(char const *variable);
 int rmovel(char const *variable);

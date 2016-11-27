@@ -10,6 +10,7 @@
 #include <keywords.h>
 #include <symtab.h>
 #include <macros.h>
+#include <pseudoassembly.h>
 
 FILE *source, *object;
 

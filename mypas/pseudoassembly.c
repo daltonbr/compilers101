@@ -1,5 +1,10 @@
 /**@<pseudoassembly.c>::**/
 
+#include <stdio.h>
+#include <pseudoassembly.h>
+
+FILE *object;
+
 int labelcounter = 1;
 int gofalse (int label)
 {
