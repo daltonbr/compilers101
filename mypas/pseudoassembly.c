@@ -5,7 +5,6 @@
 
 FILE *object;
 
-int labelcounter = 1;
 int gofalse (int label)
 {
     fprintf(object, "tjz .L%d\n", label);

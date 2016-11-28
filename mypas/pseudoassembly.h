@@ -1,6 +1,6 @@
 /**@<pseudoassembly.h>::**/
 
-extern FILE *object; // @ main.c
+extern FILE *object; // @ mypas.c
 
 int lmovel(char const *variable);
 int lmoveq(char const *variable);
@@ -8,7 +8,7 @@ int rmovel(char const *variable);
 int rmoveq(char const *variable);
 
 /*unified label counter*/
-    extern int labelcounter;
+    extern int labelcounter; // global var to label in machine code @ parser.c
 
 /*control pseudo-instructions*/
     int gofalse(int label);

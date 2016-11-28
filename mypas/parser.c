@@ -15,6 +15,7 @@
 #include <pseudoassembly.h>
 
 FILE *source, *object, *stderr;
+int labelcounter = 1;		// global var to label in machine code
 
 /*************************** LL(1) grammar definition ******************************
  *
@@ -226,8 +227,6 @@ void fnctype(void)
 			match( BOOLEAN);
     }
 }
-
-int labelcounter = 1;		// global var to label in machine code
 
 /*
  *ifstmt -> IF expr THEN body { ELIF expr THEN body } [ ELSE body ] ENDIF      // { é para fecho de klein  e [ é para opcionalidade (0 ou 1)
@@ -442,7 +441,7 @@ int superexpr(int inherited_type)
 		}
         return min(BOOLEAN, t2);
 	}
-    if(!is_compatible(inherited_type, t1)) {
+    if(!iscompatible(inherited_type, t1)) {
 		return -1;
 	}
 	return max(BOOLEAN, t1);
@@ -551,7 +550,7 @@ int expr (int inherited_type)
                     float lexval= atof(lexeme);
                     char *fltIEEE = malloc(sizeof(lexeme)+2);
                     sprintf(fltIEEE, "$%i", *((int*)&lexval));
-                    rmove_int(fltIEEE);
+                    rmovel(fltIEEE);
                     free(fltIEEE);
                 }
                 match(FLT);
