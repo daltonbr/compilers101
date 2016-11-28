@@ -86,6 +86,74 @@ int isidentifier(FILE *tape)
         return 0;
 }*/
 
+int isfloat(FILE *tape) {
+	int i = 0;
+
+	if( (i = isdecimal(tape)) ) {
+		if( lexeme[i] == '.') {
+			for (i++; isdigit (lexeme[i] = getc(tape)); i++) {
+				if(i >= MAXID_SIZE) i = MAXID_SIZE;
+			}
+			isexp(tape, &i);
+			ungetc(lexeme[i], tape);
+			lexeme[i] = '\0';
+			return FLT;
+		}
+		else if(isexp(tape, &i)) {
+			ungetc(lexeme[i], tape);
+			lexeme[i] = '\0';
+			return FLT;
+		}
+		ungetc(lexeme[i], tape);
+		lexeme[i] = '\0';
+		return DEC;
+	}
+	else if(lexeme[i] == '.') {
+		++i;
+		lexeme[i] = getc(tape);
+		if( isdigit(lexeme[i]) ) { 
+			for (i++; isdigit (lexeme[i] = getc(tape)); i++) {
+				if(i >= MAXID_SIZE) i = MAXID_SIZE;
+			}
+			isexp(tape, &i);
+			ungetc(lexeme[i], tape);
+			lexeme[i] = '\0';
+			return FLT;
+		}
+		ungetc(lexeme[i], tape);
+		--i;
+	}
+	ungetc(lexeme[i], tape);
+	lexeme[i] = '\0';
+	return 0;
+}
+
+int isexp (FILE *tape, int *count) {
+
+	if( toupper( lexeme[(*count)] ) == 'E') {
+		++(*count);
+		if( (lexeme[(*count)] = getc(tape) )== '+' || lexeme[(*count)]== '-') {
+				++(*count);
+				if(isdigit( lexeme[(*count)]  = getc(tape) )) {
+					for ( (*count)++; isdigit (lexeme[(*count)] = getc(tape)); (*count)++) {
+						if( (*count) >= MAXID_SIZE) (*count) = MAXID_SIZE;
+					}
+					return 1;
+				}
+		}
+		else if(isdigit(lexeme[(*count)])) {
+			for ((*count)++; isdigit (lexeme[(*count)] = getc(tape)); (*count)++) {
+				if((*count) >= MAXID_SIZE) (*count) = MAXID_SIZE;
+			}
+				return 1;
+		}
+		ungetc(lexeme[(*count)], tape);
+		--(*count);
+		return 0;
+	}
+	return 0;
+}
+
 int gettoken (FILE *sourcecode)
 {
         int token;
