@@ -38,16 +38,6 @@ void body(void)
 	imperative();
 }
 
-void stmtlist(void)
-{
-	_stmtlist_begin:
-	stmt();
-	if(lookahead == ';') {
-		match(';');
-		goto _stmtlist_begin;
-	}
-}
-
 /*
  * stmtsep -> ; | EOL
  */
@@ -83,16 +73,15 @@ void stmt(void)
 		case REPEAT:
 			repeatstmt();
 			break;
-		case INT:
 		case ID:	// hereafter we expect FIRST(expr)
-		case FLTCONST:
-		case INTCONST:
+		case FLT:
+		case DEC:
 		case TRUE:	// TODO: colocar isso no analisador lexico
 		case FALSE:	// TODO: isso também
 		case NOT:
 		case '-':
 		case '(':
-			expr(0);
+			superexpr(0);
 			break;
 		default:
 			/*<epsilon>*/;    // Emulating empty word
@@ -445,18 +434,23 @@ int isrelop()
 int superexpr(int inherited_type)
 {
 	int t1, t2;
-	t1 = expr(inherited_type);
+	t1 = expr(0);
 	if(isrelop()) {
-		t2 = expr(t1);
-		// TODO: check compatibility 
+		t2 = expr(0);
+		if(t1 != t2 || t1 == BOOLEAN || t2 == BOOLEAN) {
+			return -1;
+		}
+        return min(BOOLEAN, t2);
 	}
-	return min(BOOLEAN,t2);
+    if(!is_compatible(inherited_type, t1)) {
+		return -1;
+	}
+	return max(BOOLEAN, t1);
 }
 
-void expr (int inherited_type)
+int expr (int inherited_type)
 {
     /*[[*/ int varlocality, lvalue_seen = 0, acctype = inherited_type, syntype, ltype, rtype; /*]]*/ 
-	int p_count = 0;
 	if(lookahead == '-') {
 		match('-');
 		/*[[*/
@@ -491,7 +485,7 @@ void expr (int inherited_type)
 				if (lookahead == ASGN) { 		//ASGN = ":="
 					/* located variable is LTYPE */
 					/*[[*/ 
-					lvalue_seen = 1; // TODO: declare this locally
+					lvalue_seen = 1;
 					ltype = syntype;
                     /*]]*/ 
 		            match(ASGN);
@@ -501,46 +495,76 @@ void expr (int inherited_type)
 						acctype = max(rtype,acctype);
 					}else{
 						acctype = -1; // sintax error
+                        fprintf(stderr, "Incompatible type...fatal error.\n");
 					}
 					/*]]*/
 				}
-				/*[[*/
                 else if(varlocality > -1) {  //TODO: this is really necessary
                     fprintf(object,"\tpushl %%eax\n\tmov %s,%%eax\n",
 	                symtab_stream + symtab[varlocality][0]);
+
+                    if( (acctype != BOOLEAN && symtab[varlocality][1] != BOOLEAN)
+                        || (acctype == BOOLEAN && symtab[varlocality][1] == BOOLEAN) || acctype == 0) {
+                        acctype = max(acctype, symtab[varlocality][1]);
+                    }
+                    else{
+                        acctype = -1;
+                        fprintf(stderr, "Incompatible type...fatal error.\n");
+                    }
                 }
-		        /*]]*/
 				break;
-/* BEGIN ERALDO NÂO TEM ESSA PARTE */
-			case NUM:
-				printf("decimal: %c", lookahead);
-				match (NUM);
-				
-				break;
-			case '(':
-				printf("(: %c", lookahead);
-				match ('('); p_count++;
-				goto E_entry;
-				break;
-			case ')':
-				printf("): %c", lookahead);
-				match (')'); p_count--;
-				if(p_count < 0) {printf("MISSING (\n"); exit(0);}
-				goto T_entry;
-				break;			
-/* FIM ERALDO NÂO TEM ESSA PARTE */
-			case FLTCONST:
-				{
-					float lexval = atof(lexeme);
-					char *fltIEEE = malloc(strlen(lexeme) + 1);
-					sprintf(fltIEEE, "$%i", *((int *)&lexval));
-					rmovel(fltIEEE);
-				}
-				match(FLTCONST);
-				break;
-			case INTCONST:
-				match(INTCONST);
-				break;
+			case TRUE:
+                if(!iscompatible(acctype, BOOLEAN)) {
+                    fprintf(stderr, "Incompatible type, expected boolean...fatal error.\n");
+        			printf("LEX: %s\n", lexeme);
+                }else{
+                    acctype = BOOLEAN; 
+                }
+		        match(TRUE);
+		        break;
+            case FALSE:
+                if(!iscompatible(acctype, BOOLEAN)) {
+                    fprintf(stderr, "Incompatible type, expected boolean...fatal error.\n");
+                    printf("LEX: %s\n", lexeme);
+                }else{
+                    acctype = BOOLEAN;
+                } 
+                match(FALSE);
+                break;
+            case DEC:
+                if(acctype != BOOLEAN) {
+                    acctype = max(acctype, INTEGER);
+                }else{
+                    fprintf(stderr, "Incompatible type, expected integer...fatal error.\n");
+                    printf("LEX: %s\n", lexeme);
+                }
+                match(DEC);
+                break;
+            case FLT:
+                if(acctype != BOOLEAN) {
+                    acctype = max(acctype, REAL);
+                }else{
+                    fprintf(stderr, "Incompatible type, expected real...fatal error.\n");
+                    printf("LEX: %s\n", lexeme);
+                }
+                {
+                    float lexval= atof(lexeme);
+                    char *fltIEEE = malloc(sizeof(lexeme)+2);
+                    sprintf(fltIEEE, "$%i", *((int*)&lexval));
+                    rmove_int(fltIEEE);
+                    free(fltIEEE);
+                }
+                match(FLT);
+                break;
+            case DBL:
+		        if(acctype != BOOLEAN) {
+			        acctype = max(acctype, DOUBLE);
+		        }else{
+                    fprintf(stderr, "Incompatible type, expected double...fatal error.\n");
+                    printf("LEX: %s\n", lexeme);
+                }
+                match(DBL);
+                break;
 			default:
 				match('(');
 				/*[[*/syntype = /*]]*/superexpr(0);
@@ -548,16 +572,13 @@ void expr (int inherited_type)
                 if(iscompatible(syntype, acctype)){
 					acctype = max(acctype, syntype);
 				} else {
-					fprintf(stderr, "parenthesizes type incompatible with accumulated");
+					fprintf(stderr, "parenthesizes type incompatible with accumulated type");
 				}
 				/*]]*/
 				match(')');
 		}
 	if(mulop()) goto F_entry;
 	if(addop()) goto T_entry;
-	
-	if(p_count > 0)
-		printf("MISSING )\n");
 
     /* expression ends down here */
     /*[[*/ if (lvalue_seen && varlocality > -1) {
@@ -568,13 +589,14 @@ void expr (int inherited_type)
 			case DOUBLE:
 				lmoveq(symtab_stream + symtab[varlocality][0]);
 				break;
-			default:
-				; // desenvolver algo aqui
+			default: // make case BOOLEAN:
+				;
 		}
     }
-
-    /*]]*/  
+    /*]]*/
+    return acctype;  
 }
+
 /*
  * vrbl -> ID
  *

@@ -2,16 +2,13 @@
 
 enum {
 	ID = 1025,
-    INTCONST,
-    FLTCONST,
-    DBLCONST,
+    DEC,
+    FLT,
+    DBL,
     ASGN,
     GEQ,
     LEQ,
     NEQ,
-    INT,
-	//DEC,
-	//OCTAL,
 };
 
 enum {

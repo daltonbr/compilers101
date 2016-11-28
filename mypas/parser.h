@@ -18,7 +18,7 @@ void whilestmt(void);
 void repeatstmt(void);
 void dostmt(void);
 void stmt(void);
-void expr (int inherited_type);
+int expr (int inherited_type);
 int superexpr (int inherited_type);
 int vartype(void);
 void rest (void);
