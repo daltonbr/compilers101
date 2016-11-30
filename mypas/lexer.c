@@ -9,8 +9,9 @@
 
 #define MAXID_SIZE	32
 char lexeme[MAXID_SIZE+1];
+int line_count = 1;
 
-void skipspaces (FILE *tape)
+int skipspaces (FILE *tape)
 {
 	lexeme[0] = getc(tape);
     while ( lexeme[0] != '\n' && isspace (lexeme[0]) ) {
@@ -18,6 +19,45 @@ void skipspaces (FILE *tape)
 	}  // enquanto não atingir o fim de arquivo
 
         ungetc ( lexeme[0], tape );
+
+    int head;
+
+    _skipspaces:
+    while (isspace(head = getc(tape)))
+        if(head == '\n') line_count++;
+
+    if (head == '{') {
+        while ((head = getc(tape)) != '}') {
+            if(head == '\n') line_count++;
+            if (head == EOF)
+                return EOF;
+        }
+        goto _skipspaces;
+    } else if(head == '(') {
+        head = getc(tape);
+        if(head != '*') {
+            ungetc(head, tape);
+            ungetc('(', tape);
+        } else {
+            _keeplooking:
+            while ((head = getc(tape)) != '*') {
+                if(head == '\n') line_count++;
+                if (head == EOF)
+                    return EOF;
+            }
+            if ((head = getc(tape)) == ')') {
+                goto _skipspaces;
+            } else {
+                ungetc(head, tape);
+                goto _keeplooking;
+            }
+        }
+    }
+    else {
+        ungetc(head, tape);
+    }
+
+    return 0;
 }
 
 int isassign (FILE * tape)
@@ -157,7 +197,9 @@ int isexp (FILE *tape, int *count) {
 int gettoken (FILE *sourcecode)
 {
         int token;
-        skipspaces (sourcecode);
+        if(token = skipspaces (sourcecode)) {
+            return token;
+        }
 
         if( (token = isidentifier(sourcecode)) ) {
 		    return token;
