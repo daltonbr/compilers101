@@ -52,27 +52,37 @@ int rmoveq(char const *variable)
 /*unary*/
 int neglog(void)
 {
+	fprintf(object, "\t\n");
 
+	return 0;
 }
 
 int negint(void)
 {
+fprintf(object, "\t\n");
 
+	return 0;
 }
 
 int negflt(void)
 {
+fprintf(object, "\t\n");
 
+	return 0;
 }
 
 int negdbl(void)
 {
+fprintf(object, "\t\n");
 
+	return 0;
 }
 
 int addlog(void)
 {
+fprintf(object, "\t\n");
 
+	return 0;
 }
 
 int addint(void)
@@ -125,7 +135,9 @@ int adddbl(void)
 
 int sublog(void)
 {
+fprintf(object, "\t\n");
 
+	return 0;
 }
 
 int subint(void)
@@ -178,7 +190,9 @@ int subdbl(void)
 // and
 int mullog(void)
 {
+fprintf(object, "\t\n");
 
+	return 0;
 }
 
 
@@ -234,6 +248,8 @@ int divint(void)
 {
     fprintf(object, "\tdivl (%%esp)\n");
 	fprintf(object, "\taddl $4, %%esp\n");
+
+    return 0;
 }
 
 int divflt(void)
@@ -243,6 +259,8 @@ int divflt(void)
 	fprintf(object, "\tdivss %%xmm1, %%xmm0\n");
 	fprintf(object, "\tmovss %%xmm0, %%rax\n");
 	fprintf(object, "\taddq $8, %%rsp\n");
+
+    return 0;
 }
 
 int divdbl(void)
@@ -252,4 +270,6 @@ int divdbl(void)
 	fprintf(object, "\tdivsd %%xmm1, %%xmm0\n");
 	fprintf(object, "\tmovsd %%xmm0, %%rax\n");
 	fprintf(object, "\taddq $8, %%rsp\n");
+
+    return 0;
 }
