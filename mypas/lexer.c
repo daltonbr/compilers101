@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-
+#include <lexer.h>
 #include <tokens.h>
 #include <keywords.h>
 
@@ -56,11 +56,11 @@ int isidentifier(FILE *tape)
 {
 	int token;
 
-	if (isalpha (lexeme[0] = getc(tape)) ) {
-                for(token = 1; isalnum (lexeme[token] = getc(tape)); token < MAXID_SIZE ? token++ : token);
+	if (isalpha ((lexeme[0] = getc(tape))) ) {
+                for(token = 1; isalnum ((lexeme[token] = getc(tape))); token < MAXID_SIZE ? token++ : token);
                 ungetc (lexeme[token], tape);
 		lexeme[token] = 0;
-		if(token = iskeyword(lexeme)) return token;
+		if((token = iskeyword(lexeme))) return token;
                 return ID;
         }
         ungetc (lexeme[0], tape);
