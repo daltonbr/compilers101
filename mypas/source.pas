@@ -1,4 +1,4 @@
-var x, y : interger;
+var x, y : integer;
 begin
     if x > 3 then
         begin

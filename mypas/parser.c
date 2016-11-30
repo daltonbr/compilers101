@@ -380,7 +380,7 @@ int iscompatible(int ltype, int rtype)
 			}
 			break;
 		case INTEGER:
-			if(rtype = ltype) {
+			if(rtype == ltype) {
 				return ltype;
 			}
 			break;

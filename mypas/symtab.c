@@ -13,13 +13,15 @@ int symtab_nextentry = 0;
 #define 	VAR_ALREADY_EXISTS	-3
 #define		SYMTAB_OVERFLOW		-2
 #define		SUCCESS			 1
-int symtab_lookup(char const *name)
+int symtab_lookup(char const *symbol)
 {
-	int i;
-	for (i = symtab_nextentry-1; i > -1; i--){
-		if(strcmp(symtab_stream[symtab[i][0]], name) == 0)break;
+	int             i;
+	for (i = symtab_nextentry - 1; i > -1; i--) {
+		if (strcmp(symtab_stream + symtab[i][0], symbol)
+			== 0)
+			return i;
 	}
-	return i;
+	return -1;
 }
 
 int symtab_append(char const *name, int type)

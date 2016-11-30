@@ -13,17 +13,18 @@ FILE *source, *object;
 
 extern int lookahead; // @ parser.c
 
-main (int argc, char *argv[], char *envp[])
+int main (int argc, char *argv[], char *envp[])
 {
     object = stdout;    // TODO: output must be in a file, the object file, for now we output to the terminal
 /*    if (argc == 1) {
         source = stdin;
     } else { */
         //source = fopen (argv[1], "r");
-        source = fopen ("source.pas", "r");  // TODO: remove this hardcoded input file and return the original form
+        source = fopen ("/Users/rlino/Documents/unesp/compilers101/mypas/sc.pas", "r");  // TODO: remove this hardcoded input file and return the original form
         if (source == NULL) {
-            fprintf (stderr, "%s: cannot open %s... exiting\n",
-                    argv[0], argv[1]);
+//            fprintf (stderr, "%s: cannot open %s... exiting\n",
+//                    argv[0], argv[1]);
+
             exit (-1);
         }
 //    }
