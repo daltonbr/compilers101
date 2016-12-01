@@ -138,7 +138,7 @@ void declarative(void)
 			match(':');
 			fnctype();
 			match(';');
-			body();
+			stmtlist();
 			match(';');
 		}
 	}
@@ -200,11 +200,9 @@ int vartype(void)
 		case INTEGER:
 			match(INTEGER);
             return INTEGER;
-			break;
 		case REAL:
 			match(REAL);
             return REAL;
-			break;
         case DOUBLE:
             match(DOUBLE);
             return DOUBLE;
@@ -229,7 +227,7 @@ void fnctype(void)
 }
 
 /*
- *ifstmt -> IF expr THEN body { ELIF expr THEN body } [ ELSE body ] ENDIF      // { é para fecho de klein  e [ é para opcionalidade (0 ou 1)
+ *ifstmt -> IF expr THEN stmtlist { ELIF expr THEN stmtlist } [ ELSE stmtlist ] ENDIF      // { é para fecho de klein  e [ é para opcionalidade (0 ou 1)
  */
 void ifstmt(void)
 {
@@ -237,17 +235,19 @@ void ifstmt(void)
 	int _endif, _else;
 	match(IF);
 	printf("after match \n: %c", lookahead);
-	syntype = superexpr(BOOLEAN); // TODO: check if is boolean
-//	if(superexpr(BOOLEAN) < 0) // TODO: deu pau, escreve o erro tipo not boolean
+//	syntype = superexpr(BOOLEAN); // TODO: check if is boolean
+	if(superexpr(BOOLEAN) < 0) {
+        fprintf(stderr,"incompatible unary operator: FATAL ERROR.\n");
+    }
 //	fprintf(object,"\tjz .L%d\n", _endif = _else = labelcounter++); TODO: criar arquivo object e descomentar os outros fprintf
 	_endif = _else = gofalse(labelcounter++);
 	match(THEN);
-	stmt(); // eraldo colocou stmt(); mas não tem o ELIF
+	stmtlist(); // eraldo colocou stmt(); mas não tem o ELIF
 	while (lookahead == ELIF) {
 		match(ELIF);
 		syntype = superexpr(BOOLEAN);		
 		match(THEN);
-		body();
+		stmtlist();
 	}
 	if(lookahead == ELSE) {
 		match(ELSE);
@@ -256,7 +256,7 @@ void ifstmt(void)
 		_endif = jump(labelcounter++);
 		mklabel(_else);
 		/**/
-		body();
+		stmtlist();
 	}
 	match(ENDIF);
 //	fprintf(object,".L%d:\n", _endif);
@@ -310,7 +310,7 @@ void repeatstmt(void)
 	int syntype;	
 	(void)printf("ID: %c", lookahead);
 
-	match(DO); stmt(); match(WHILE); 
+	match(DO); stmtlist(); match(WHILE);
 	syntype = superexpr(BOOLEAN);
 //	if(superexpr(BOOLEAN) < 0) // TODO: deu pau, escreve o erro tipo not boolean
 }
