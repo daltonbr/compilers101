@@ -94,7 +94,9 @@ void stmt(void)
 			/*<epsilon>*/;    // Emulating empty word
 	}
 }
-
+/*
+ * blockstmt -> BEGIN stmtlist END
+ */
 void blockstmt(void)
 {
     match(BEGIN);
@@ -256,7 +258,7 @@ void ifstmt(void)
 	if(superexpr(BOOLEAN) < 0) {
         fprintf(stderr,"Incompatible type, expected boolean...fatal error.\n");
     }
-	fprintf(object,"\tjz .L%d \t [[then]] \n", _endif = _else = labelcounter++); //TODO: criar arquivo object e descomentar os outros fprintf
+	fprintf(object,"\tjz .L%d \t [[then]] \n", _endif = _else = labelcounter++);
 	_endif = _else = gofalse(labelcounter++);
 	match(THEN);
 	stmtlist();
@@ -524,9 +526,8 @@ int expr (int inherited_type)
 					}
 					/*]]*/
 				}
-                else if(varlocality > -1) {  //TODO: this is really necessary
-//                    fprintf(object,"\tpushl %%eax\n\tmov %s,%%eax\n",
-//	                symtab_stream + symtab[varlocality][0]);
+                else if(varlocality > -1) {
+                    fprintf(object,"\tpushl %%eax\n\tmov %s,%%eax\n", symtab_stream + symtab[varlocality][0]);
 
                     if( (acctype != BOOLEAN && symtab[varlocality][1] != BOOLEAN)
                         || (acctype == BOOLEAN && symtab[varlocality][1] == BOOLEAN) || acctype == 0) {
