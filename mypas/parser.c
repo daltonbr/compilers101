@@ -234,32 +234,32 @@ void ifstmt(void)
 	int syntype;
 	int _endif, _else;
 	match(IF);
-	printf("after match \n: %c", lookahead);
+	printf("\n: [[ifstmt]]");
 //	syntype = superexpr(BOOLEAN); // TODO: check if is boolean
 	if(superexpr(BOOLEAN) < 0) {
         fprintf(stderr,"incompatible unary operator: FATAL ERROR.\n");
     }
-	fprintf(object,"\tjz .L%d\n", _endif = _else = labelcounter++); //TODO: criar arquivo object e descomentar os outros fprintf
+	fprintf(object,"\tjz .L%d \t [[then]] \n", _endif = _else = labelcounter++); //TODO: criar arquivo object e descomentar os outros fprintf
 	_endif = _else = gofalse(labelcounter++);
 	match(THEN);
 	stmtlist();
 	while (lookahead == ELIF) {
-		match(ELIF);
+		match(ELIF); fprintf(object,"\t [[elif]] \n");
 		syntype = superexpr(BOOLEAN);		
-		match(THEN);
+		match(THEN); fprintf(object,"\t [[then]] \n");
 		stmtlist();
 	}
 	if(lookahead == ELSE) {
 		match(ELSE);
-		fprintf(object,"\tjmp .L%d\n", _endif = labelcounter++);
-        fprintf(object,".L%d:\n", _else);
+		fprintf(object,"\tjmp .L %d [[endif]]\n", _endif = labelcounter++);
+        fprintf(object,".L %d: \t [[else]] \n", _else);
 		_endif = jump(labelcounter++);
 		mklabel(_else);
 		/**/
 		stmtlist();
 	}
 	match(ENDIF);
-	fprintf(object,".L%d:\n", _endif);
+	fprintf(object,".L %d: \t [[endif]] \n", _endif);
 	mklabel(_endif);
 }
 
