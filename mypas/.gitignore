@@ -16,7 +16,7 @@ mypas
 .idea/sqlDataSources.xml
 .idea/dynamic.xml
 .idea/uiDesigner.xml
-.idea/cmake-build/debug/*.*
+/mypas/cmake-build/debug/*.*
 
 # Gradle:
 .idea/gradle.xml
