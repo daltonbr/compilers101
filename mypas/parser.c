@@ -34,28 +34,8 @@ void mypas(void)
  */
 void body(void)
 {
-    //programhead();
 	declarative();
 	imperative();
-}
-
-/*
- * programhead -> PROGRAM nameprogram
- */
-void programhead(void)
-{
-    if(lookahead == PROGRAM) {
-        match(PROGRAM);
-        if(lookahead == ID) {
-            /*[[*/
-            char *symvec = calloc(MAX_ARG_NUM, sizeof(char *));
-            symvec = malloc(strlen(lexeme) + 1);
-            strcpy(symvec, lexeme);
-            cod_header(symvec);
-            /*;;*/
-        }
-    }
-
 }
 
 /*

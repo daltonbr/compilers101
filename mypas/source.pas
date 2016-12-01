@@ -1,4 +1,3 @@
-program mypasprog;
 var x, y : integer;
 begin
     x := 1;
