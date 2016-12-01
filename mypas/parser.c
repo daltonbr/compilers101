@@ -62,9 +62,6 @@ int stmtsep(void)
 void stmt(void)
 {
 	switch(lookahead){
-		case BEGIN:
-			imperative();
-            break;
 		case IF:
 			ifstmt();
 			break;
@@ -74,6 +71,9 @@ void stmt(void)
 		case REPEAT:
 			repeatstmt();
 			break;
+        case BEGIN:
+            blockstmt();
+            break;
 		case ID:	// hereafter we expect FIRST(expr)
 		case FLT:
 		case DEC:
@@ -87,6 +87,13 @@ void stmt(void)
 		default:
 			/*<epsilon>*/;    // Emulating empty word
 	}
+}
+
+void blockstmt(void)
+{
+    match(BEGIN);
+    stmtlist();
+    match(END);
 }
 
 void stmtlist(void)
@@ -227,7 +234,7 @@ void fnctype(void)
 }
 
 /*
- *ifstmt -> IF expr THEN stmtlist { ELIF expr THEN stmtlist } [ ELSE stmtlist ] ENDIF      // { é para fecho de klein  e [ é para opcionalidade (0 ou 1)
+ *ifstmt -> IF superexpr THEN stmtlist { ELIF superexpr THEN stmtlist } [ ELSE stmtlist ] ENDIF      // { é para fecho de klein  e [ é para opcionalidade (0 ou 1)
  */
 void ifstmt(void)
 {
@@ -265,22 +272,25 @@ void ifstmt(void)
 
 /*
  * whilestmt -> ...
- *	WHILE superexpr DO stmtlist 
+ *	WHILE superexpr DO blockstmt
  */
 void whilestmt(void)
 {
 	int syntype;
 	/**/int while_head, while_tail/**/;
 	
-	match(WHILE); 
-	/**/mklabel(while_head = labelcounter++);   /// cria a cabeça do while -> faz o ponto de entrada do while
+	match(WHILE);
+    fprintf(object, "\n[[label: while_head]]");
+	/**/mklabel(while_head = labelcounter++);
 	syntype = superexpr(BOOLEAN);
 //	if(superexpr(BOOLEAN) < 0) // TODO: deu pau, escreve o erro tipo not boolean
 	/**/gofalse(while_tail)/**/;
 	match(DO); stmtlist();
 	/**/jump(while_head = labelcounter++)/**/;
-	/**/mklabel(while_tail)/**/;// aqui vai a saída do while
-	match(END);
+    fprintf(object, "\n[[label: while_tail]]");
+    /**/mklabel(while_tail)/**/;
+    match(END);
+
 	/*
 	 *    | while |
 	 *        |
