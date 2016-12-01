@@ -7,24 +7,6 @@
 .commom c,4,4,
 .commom b,4,4,
 .commom a,4,4,
-	 .global nada
-	 .type nada, @function
-_nada:
-	 pushl %ebp
-	 movl %esp,%ebp
-	 movl 8(%ebp),%eax
-	 pushl %eax
-	 movl 12(%ebp),%eax
-	 pushl %eax
-	 popl %eax
-	 imul (%esp)
-	 addl &4,%esp
-	 pushl %eax
-	 popl %eax
-	 movl %eax,-4(%ebp)
-	 movl %ebp,%esp
-	 popl %ebp
-	 ret
 _teste:
 	 movl &1,%eax
 	 pushl %eax

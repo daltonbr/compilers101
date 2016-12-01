@@ -18,6 +18,7 @@
 
 FILE *source, *object;
 int labelcounter = 1;		// global var to label in machine code
+char *nameprogram = NULL;	// global var to name of the program
 
 /*************************** LL(1) grammar definition ******************************
  *
@@ -34,8 +35,23 @@ void mypas(void)
  */
 void body(void)
 {
+	programhead();
 	declarative();
 	imperative();
+}
+
+/*
+ * programhead -> PROGRAM nameprogram
+ */
+void programhead(void)
+{
+	if(lookahead == PROGRAM) {
+		nameprogram = malloc(sizeof(lexeme)+1);
+		match(PROGRAM);
+		strcpy(nameprogram, lexeme);
+		cod_header(lexeme);
+		match(ID);
+	}
 }
 
 /*
