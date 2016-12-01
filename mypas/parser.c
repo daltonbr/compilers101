@@ -257,7 +257,7 @@ void ifstmt(void)
 	int syntype;
 	int _endif, _else;
 	match(IF);
-	printf("\n: [[ifstmt]]");
+	printf("\n[[ifstmt]]");
 	if(superexpr(BOOLEAN) < 0) {
         fprintf(stderr,"Incompatible type, expected boolean...fatal error.\n");
     }
@@ -275,15 +275,15 @@ void ifstmt(void)
 	}
 	if(lookahead == ELSE) {
 		match(ELSE);
-		fprintf(object,"\tjmp .L %d [[endif]]\n", _endif = labelcounter++);
-        fprintf(object,".L %d: \t [[else]] \n", _else);
+		fprintf(object,"\tjmp .L%d [[endif]]\n", _endif = labelcounter++);
+        fprintf(object,".L%d: \t \n", _else);
 		_endif = jump(labelcounter++);
 		mklabel(_else);
 		/**/
 		stmtlist();
 	}
 	match(ENDIF);
-	fprintf(object,".L %d: \t [[endif]] \n", _endif);
+	fprintf(object,".L%d: \t \n", _endif);
 	mklabel(_endif);
 }
 
