@@ -7,6 +7,7 @@ begin
 
     if w > 4.0 then
         x := 2 * y + 4;
+        w := w + 1.2;
     elif x > 5 then
         x := 10;
     else
