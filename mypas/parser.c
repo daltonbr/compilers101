@@ -14,7 +14,7 @@
 #include <macros.h>
 #include <pseudoassembly.h>
 
-FILE *source, *object, *stderr;
+FILE *source, *object;
 int labelcounter = 1;		// global var to label in machine code
 
 /*************************** LL(1) grammar definition ******************************
@@ -239,10 +239,10 @@ void ifstmt(void)
 	if(superexpr(BOOLEAN) < 0) {
         fprintf(stderr,"incompatible unary operator: FATAL ERROR.\n");
     }
-//	fprintf(object,"\tjz .L%d\n", _endif = _else = labelcounter++); TODO: criar arquivo object e descomentar os outros fprintf
+	fprintf(object,"\tjz .L%d\n", _endif = _else = labelcounter++); //TODO: criar arquivo object e descomentar os outros fprintf
 	_endif = _else = gofalse(labelcounter++);
 	match(THEN);
-	stmtlist(); // eraldo colocou stmt(); mas não tem o ELIF
+	stmtlist();
 	while (lookahead == ELIF) {
 		match(ELIF);
 		syntype = superexpr(BOOLEAN);		
@@ -251,15 +251,15 @@ void ifstmt(void)
 	}
 	if(lookahead == ELSE) {
 		match(ELSE);
-//		fprintf(object,"\tjmp .L%d\n", _endif = labelcounter++);
-//		fprintf(object,".L%d:\n", _else);
+		fprintf(object,"\tjmp .L%d\n", _endif = labelcounter++);
+        fprintf(object,".L%d:\n", _else);
 		_endif = jump(labelcounter++);
 		mklabel(_else);
 		/**/
 		stmtlist();
 	}
 	match(ENDIF);
-//	fprintf(object,".L%d:\n", _endif);
+	fprintf(object,".L%d:\n", _endif);
 	mklabel(_endif);
 }
 

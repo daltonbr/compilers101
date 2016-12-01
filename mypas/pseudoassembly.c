@@ -7,44 +7,44 @@ FILE *object;
 
 int gofalse (int label)
 {
-    fprintf(object, "tjz .L%d\n", label);
+    fprintf(object, "\tjz .L%d \t [[gofalse]]\n ", label);
     return label;
 }
 
 int jump(int label)
 {
-    fprintf(object, "tjmp .L%d\n", label);
+    fprintf(object, "\tjmp .L%d \t [[jump]] \n", label);
     return label;
 }
 
 int mklabel (int label)
 {
-    fprintf(object, ".L %d:\n", label);
+    fprintf(object, ".L %d: \t [[mklabel]] \n", label);
     return label;
 }
 
 int lmovel(char const *variable)
 {
-	fprintf(object, "\tmovl %%eax,%s\n", variable);
+	fprintf(object, "\tmovl %%eax,%s \t [[lmovel]] \n", variable);
 	return 0;
 }
 
 int lmoveq(char const *variable)
 {
-	fprintf(object, "\tmovq %%rax,%s\n", variable);
+	fprintf(object, "\tmovq %%rax,%s \t [[lmoveq]] \n", variable);
 	return 0;
 }
 
 int rmovel(char const *variable)
 {
-	fprintf(object, "\tpush %%eax\n");
+	fprintf(object, "\tpush %%eax  \t [[rmovel]] \n");
 	fprintf(object, "\tmovl %s,%%eax\n", variable);
 	return 0;
 }
 
 int rmoveq(char const *variable)
 {
-	fprintf(object, "\tmovq %s, %%rax\n", variable);
+	fprintf(object, "\tmovq %s, %%rax \t [[rmoveq]] \n", variable);
 	return 0;
 }
 
@@ -52,35 +52,35 @@ int rmoveq(char const *variable)
 /*unary*/
 int neglog(void)
 {
-	fprintf(object, "\t\n");
+	fprintf(object, "\t \t [[neglog]] \n");
 
 	return 0;
 }
 
 int negint(void)
 {
-fprintf(object, "\t\n");
+fprintf(object, "\t \t [[negint]] \n");
 
 	return 0;
 }
 
 int negflt(void)
 {
-fprintf(object, "\t\n");
+fprintf(object, "\t \t [[negflt]] \n");
 
 	return 0;
 }
 
 int negdbl(void)
 {
-fprintf(object, "\t\n");
+fprintf(object, "\t \t [[negdbl]] \n");
 
 	return 0;
 }
 
 int addlog(void)
 {
-fprintf(object, "\t\n");
+fprintf(object, "\t \t [[addlog]] \n");
 
 	return 0;
 }
@@ -91,7 +91,7 @@ int addint(void)
  * 	addl %eax, (%esp)
  * 	popl %eax
  */
-	fprintf(object, "\taddl %%eax, (%%esp)\n");
+	fprintf(object, "\taddl %%eax, (%%esp) \t [[addint]] \n");
 	fprintf(object, "\tpopl %%eax\n");
 
 	return 0;
@@ -106,7 +106,7 @@ int addflt(void)
  * 	movss 	%xmm0, %eax
  * 	addl 	$4, %esp
  */
-	fprintf(object, "\tmovss (%%esp), %%xmm1\n");
+	fprintf(object, "\tmovss (%%esp), %%xmm1 \t [[addflt]] \n");
 	fprintf(object, "\tmovss %%eax, %%xmm0\n");
 	fprintf(object, "\taddss %%xmm1, %%xmm0\n");
 	fprintf(object, "\tmovss %%xmm0, %%eax\n");
@@ -124,7 +124,7 @@ int adddbl(void)
  * 	movsd	%xmm0, %rax
  * 	addq 	$8, %rsp
  */
-	fprintf(object, "\tmovsd (%%rsp), %%xmm1\n");
+	fprintf(object, "\tmovsd (%%rsp), %%xmm1 \t [[adddbl]] \n");
 	fprintf(object, "\tmovsd %%rax, %%xmm0\n");
 	fprintf(object, "\taddsd %%xmm1, %%xmm0\n");
 	fprintf(object, "\tmovsd %%xmm0, %%rax\n");
@@ -135,7 +135,7 @@ int adddbl(void)
 
 int sublog(void)
 {
-fprintf(object, "\t\n");
+fprintf(object, "\t \t [[sublog]] \n");
 
 	return 0;
 }
@@ -146,7 +146,7 @@ int subint(void)
  * 	subl %eax, (%esp)
  * 	popl %eax
  */
-	fprintf(object, "\tsubl %%eax, (%%esp)\n");
+	fprintf(object, "\tsubl %%eax, (%%esp) \t [[subint]] \n");
 	fprintf(object, "\tpopl %%eax\n");
 
 	return 0;
@@ -161,7 +161,7 @@ int subflt(void)
  * 	movss 	%xmm0, %eax
  * 	addl 	$4, %esp
  */
-	fprintf(object, "\tmovss (%%esp), %%xmm1\n");
+	fprintf(object, "\tmovss (%%esp), %%xmm1 \t [[subflot]] \n");
 	fprintf(object, "\tmovss %%eax, %%xmm0\n");
 	fprintf(object, "\tsubss %%xmm1, %%xmm0\n");
 	fprintf(object, "\tmovss %%xmm0, %%eax\n");
@@ -179,7 +179,7 @@ int subdbl(void)
  * 	movsd	%xmm0, %rax
  * 	addq 	$8, %rsp
  */
-	fprintf(object, "\tmovsd (%%rsp), %%xmm1\n");
+	fprintf(object, "\tmovsd (%%rsp), %%xmm1 \t [[subdbl]] \n");
 	fprintf(object, "\tmovsd %%rax, %%xmm0\n");
 	fprintf(object, "\tsubsd %%xmm1, %%xmm0\n");
 	fprintf(object, "\tmovsd %%xmm0, %%rax\n");
@@ -190,7 +190,7 @@ int subdbl(void)
 // and
 int mullog(void)
 {
-fprintf(object, "\t\n");
+fprintf(object, "\t \t [[mullog]] \n");
 
 	return 0;
 }
@@ -202,7 +202,7 @@ int mulint(void)
  * 	subl %eax, (%esp)
  * 	popl %eax
  */
-	fprintf(object, "\tmull %%eax, (%%esp)\n");
+	fprintf(object, "\tmull %%eax, (%%esp) \t [[mulint]] \n");
 	fprintf(object, "\tpopl %%eax\n");
 
 	return 0;
@@ -217,7 +217,7 @@ int mulflt(void)
  * 	movss 	%xmm0, %eax
  * 	addl 	$4, %esp
  */
-	fprintf(object, "\tmovss (%%esp), %%xmm1\n");
+	fprintf(object, "\tmovss (%%esp), %%xmm1 \t [[mulflt]] \n");
 	fprintf(object, "\tmovss %%eax, %%xmm0\n");
 	fprintf(object, "\tmulss %%xmm1, %%xmm0\n");
 	fprintf(object, "\tmovss %%xmm0, %%eax\n");
@@ -235,7 +235,7 @@ int muldbl(void)
  * 	movsd	%xmm0, %rax
  * 	addq 	$8, %rsp
  */
-	fprintf(object, "\tmovsd (%%rsp), %%xmm1\n");
+	fprintf(object, "\tmovsd (%%rsp), %%xmm1 \t [[muldbl]] \n");
 	fprintf(object, "\tmovsd %%rax, %%xmm0\n");
 	fprintf(object, "\tmulsd %%xmm1, %%xmm0\n");
 	fprintf(object, "\tmovsd %%xmm0, %%rax\n");
@@ -246,7 +246,7 @@ int muldbl(void)
 
 int divint(void)
 {
-    fprintf(object, "\tdivl (%%esp)\n");
+    fprintf(object, "\tdivl (%%esp) \t [[divint]] \n");
 	fprintf(object, "\taddl $4, %%esp\n");
 
     return 0;
@@ -254,7 +254,7 @@ int divint(void)
 
 int divflt(void)
 {
-    fprintf(object, "\tmovss (%%rsp), %%xmm0\n");
+    fprintf(object, "\tmovss (%%rsp), %%xmm0 \t [[divflt]] \n");
 	fprintf(object, "\tmovss %%rax, %%xmm1\n");
 	fprintf(object, "\tdivss %%xmm1, %%xmm0\n");
 	fprintf(object, "\tmovss %%xmm0, %%rax\n");
@@ -265,7 +265,7 @@ int divflt(void)
 
 int divdbl(void)
 {
-    fprintf(object, "\tmovsd (%%rsp), %%xmm0\n");
+    fprintf(object, "\tmovsd (%%rsp), %%xmm0 \t [[divdbl]] \n");
 	fprintf(object, "\tmovsd %%rax, %%xmm1\n");
 	fprintf(object, "\tdivsd %%xmm1, %%xmm0\n");
 	fprintf(object, "\tmovsd %%xmm0, %%rax\n");

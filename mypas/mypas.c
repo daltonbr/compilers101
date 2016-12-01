@@ -22,8 +22,8 @@ int main (int argc, char *argv[], char *envp[])
         //source = fopen (argv[1], "r");
         source = fopen ("../source.pas", "r");  // TODO: remove this hardcoded input file and return the original form
         if (source == NULL) {
-//            fprintf (stderr, "%s: cannot open %s... exiting\n",
-//                    argv[0], argv[1]);
+            fprintf (stderr, "%s: cannot open %s... exiting\n",
+                    argv[0], argv[1]);
 
             exit (-1);
         }
