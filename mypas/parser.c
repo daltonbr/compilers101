@@ -147,7 +147,8 @@ void declarative(void)
 }
 
 /*
- * imperative -> BEGIN stmtlist END
+ * imperative -> blockstmt 			// blockstmt -> BEGIN stmtlist END
+ * this method is created to emphasizes the semantical differences between imperative() and blockstmt()
  */
 void
 imperative(void)
