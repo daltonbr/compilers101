@@ -59,6 +59,14 @@ int rmoveq(char const *variable)
 	return 0;
 }
 
+
+int writeln(char *strwrite)
+{
+    fprintf(object,"\t movl &4,%%eax\n");
+    fprintf(object,"\t movl &1,%%ebx\n");
+    fprintf(object,"\t movl %s,%%ecx\n",strwrite);
+}
+
 /*ULA pseudo-instructions*/
 /*unary*/
 int neglog(void)

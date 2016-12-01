@@ -119,8 +119,10 @@ void stmtlist(void)
  * WRITE -> WRITE ( " string " )
  */
 void writestmt(void) {
-    match(WRITE); fprintf(object,"[[writestmt]]");
+    match(WRITE);
+	fprintf(object,"[[writestmt]]");
     match('(');
+    writeln(lexeme);
     match(STR);
     match(')');
 }

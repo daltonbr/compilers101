@@ -10,6 +10,8 @@ int lmoveq(char const *variable);
 int rmovel(char const *variable);
 int rmoveq(char const *variable);
 
+int writeln(char *strwrite);
+
 /*unified label counter*/
     extern int labelcounter; // global var to label in machine code @ parser.c
 
