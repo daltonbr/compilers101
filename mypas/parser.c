@@ -24,7 +24,7 @@ int labelcounter = 1;		// global var to label in machine code
 void mypas(void)
 {
 	body();
-	match(EOF);
+	match('.');
 }
 
 /*
@@ -580,18 +580,18 @@ int expr (int inherited_type)
 	if(addop()) goto T_entry;
 
     /* expression ends down here */
-    /*[[*/ if (lvalue_seen && varlocality > -1) {
-		switch(ltype){
-			case INTEGER:case REAL:
-				lmovel(symtab_stream + symtab[varlocality][0]);
-				break;
-			case DOUBLE:
-				lmoveq(symtab_stream + symtab[varlocality][0]);
-				break;
-			default: // make case BOOLEAN:
-				;
-		}
-    }
+//    /*[[*/ if (lvalue_seen && varlocality > -1) {
+//		switch(ltype){
+//			case INTEGER:case REAL:
+//				lmovel(symtab_stream + symtab[varlocality][0]);
+//				break;
+//			case DOUBLE:
+//				lmoveq(symtab_stream + symtab[varlocality][0]);
+//				break;
+//			default: // make case BOOLEAN:
+//				;
+//		}
+//    }
     /*]]*/
     return acctype;  
 }
