@@ -17,6 +17,7 @@ mypas
 .idea/dynamic.xml
 .idea/uiDesigner.xml
 /mypas/cmake-build/debug/*.*
+cmake-build-debug/
 
 # Gradle:
 .idea/gradle.xml
