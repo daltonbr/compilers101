@@ -28,6 +28,7 @@ char *keywords[] = {
         "not",
         "true",
         "false",
+		"program",
         "end"
 };
 

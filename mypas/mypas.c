@@ -15,7 +15,13 @@ extern int lookahead; // @ parser.c
 
 int main (int argc, char *argv[], char *envp[])
 {
-    object = stdout;    // TODO: output must be in a file, the object file, for now we output to the terminal
+    object = stdout;
+/*
+    if(!(object = fopen("../object.s","w"))){
+        perror("Unable to output object.s");
+        return errno;
+    }
+*/
 /*    if (argc == 1) {
         source = stdin;
     } else { */

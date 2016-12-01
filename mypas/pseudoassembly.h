@@ -2,6 +2,8 @@
 
 extern FILE *object; // @ mypas.c
 
+void cod_header(char const *nameProgram);
+
 int lmovel(char const *variable);
 int lmoveq(char const *variable);
 int rmovel(char const *variable);

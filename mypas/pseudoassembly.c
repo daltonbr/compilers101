@@ -5,6 +5,12 @@
 
 FILE *object;
 
+void cod_header(char const *nameProgram){
+    fprintf(object,"\t .section .text");
+    fprintf(object,"\n\t .global _%s",nameProgram);
+    fprintf(object,"\n\t jmp _%s",nameProgram);
+}
+
 int gofalse (int label)
 {
     fprintf(object, "\tjz .L%d \t [[gofalse]]\n ", label);
