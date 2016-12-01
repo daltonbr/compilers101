@@ -16,16 +16,16 @@ enum{
     VAR, //524300
     BOOLEAN, //524301
     INTEGER, //524302
-    REAL,
-    DOUBLE,
-    DIV,
-    MOD,
-    AND,
-    OR,
-    NOT,
-    TRUE,
-    FALSE,
-    END
+    REAL, //524303
+    DOUBLE, //524304
+    DIV, //524305
+    MOD, //524306
+    AND, //524307
+    OR, //524308
+    NOT, //524309
+    TRUE, //524310
+    FALSE, //524311
+    END //524312
 };
 
 extern char *keywords[];

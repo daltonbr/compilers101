@@ -61,10 +61,10 @@ int stmtsep(void)
  */
 void stmt(void)
 {
-	printf("CMD: %d", lookahead);
 	switch(lookahead){
 		case BEGIN:
 			imperative();
+            break;
 		case IF:
 			ifstmt();
 			break;
@@ -242,7 +242,7 @@ void ifstmt(void)
 //	fprintf(object,"\tjz .L%d\n", _endif = _else = labelcounter++); TODO: criar arquivo object e descomentar os outros fprintf
 	_endif = _else = gofalse(labelcounter++);
 	match(THEN);
-	body(); // eraldo colocou stmt(); mas não tem o ELIF
+	stmt(); // eraldo colocou stmt(); mas não tem o ELIF
 	while (lookahead == ELIF) {
 		match(ELIF);
 		syntype = superexpr(BOOLEAN);		
@@ -277,7 +277,7 @@ void whilestmt(void)
 	syntype = superexpr(BOOLEAN);
 //	if(superexpr(BOOLEAN) < 0) // TODO: deu pau, escreve o erro tipo not boolean
 	/**/gofalse(while_tail)/**/;
-	match(DO); stmt();
+	match(DO); stmtlist();
 	/**/jump(while_head = labelcounter++)/**/;
 	/**/mklabel(while_tail)/**/;// aqui vai a saída do while
 	match(END);
@@ -373,6 +373,8 @@ void repeatstmt(void)
 
 int iscompatible(int ltype, int rtype)
 {
+    if(ltype == 0) return rtype;
+
 	switch(ltype) {
 		case BOOLEAN:
 			if(rtype == ltype) {

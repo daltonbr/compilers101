@@ -1,6 +1,7 @@
 /**@<symtab.c>::**/
 
 #include <string.h>
+#include <printf.h>
 
 #define		MAX_SYMTAB_ENTRIES	 0x10000
 #define		MAXID_SIZE			 32
