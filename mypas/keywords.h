@@ -26,7 +26,8 @@ enum{
     NOT, //524309
     TRUE, //524310
     FALSE, //524311
-    END //524312
+	PROGRAM, //524312
+    END //524313
 };
 
 extern char *keywords[];

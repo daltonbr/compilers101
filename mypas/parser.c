@@ -28,12 +28,28 @@ void mypas(void)
 }
 
 /*
- * body -> declarative imperative
+ * body -> programhead declarative imperative
  */
 void body(void)
 {
+    programhead();
 	declarative();
 	imperative();
+}
+
+/*
+ * programhead -> PROGRAM nameprogram
+ */
+void programhead(void)
+{
+    if(lookahead == PROGRAM) {
+        match(PROGRAM);
+        if(lookahead == ID) {
+            /*[[*/char **namev = /*]]*/ namelist();
+            /*[[*/cod_header(namev);/*;;*/
+        }
+    }
+
 }
 
 /*
@@ -150,9 +166,7 @@ void declarative(void)
 void
 imperative(void)
 {
-	match(BEGIN);
-	stmtlist();
-	match(END);
+	blockstmt();
 }
 
 void parmdef(void)
@@ -278,11 +292,11 @@ void whilestmt(void)
 	syntype = superexpr(BOOLEAN);
 //	if(superexpr(BOOLEAN) < 0) // TODO: deu pau, escreve o erro tipo not boolean
 	/**/gofalse(while_tail)/**/;
-	match(DO); stmtlist();
+    match(DO);
+    blockstmt();
 	/**/jump(while_head = labelcounter++)/**/;
     fprintf(object, "\n[[label: while_tail]]");
     /**/mklabel(while_tail)/**/;
-    match(END);
 
 	/*
 	 *    | while |
