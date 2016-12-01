@@ -1,10 +1,12 @@
 var x, y : integer;
 begin
+    x := 1;
+    y := 2;
     if x > 3 then
-        begin
-            x := 2 * y + 4
-            y := x * y
-        end
-    else
-        y := 5
+        x := 2 * y + 4;
+    y := x * y;
+    endif;
+    while x < 2 do
+        x := x + 1;
+end;
 end.
