@@ -31,7 +31,7 @@ int jump(int label)
 
 int mklabel (int label)
 {
-    fprintf(object, ".L %d: \t [[mklabel]] \n", label);
+    fprintf(object, ".L%d: \t [[mklabel]] \n", label);
     return label;
 }
 
