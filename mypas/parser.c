@@ -527,7 +527,7 @@ int expr (int inherited_type)
 					/*]]*/
 				}
                 else if(varlocality > -1) {
-                    fprintf(object,"\tpushl %%eax\n\tmov %d,%%eax\n", symtab_stream + symtab[varlocality][0]);
+                    fprintf(object,"\tpushl %%eax\n\tmov %s,%%eax\n", &symtab_stream + symtab[varlocality][0]);
 
                     if( (acctype != BOOLEAN && symtab[varlocality][1] != BOOLEAN)
                         || (acctype == BOOLEAN && symtab[varlocality][1] == BOOLEAN) || acctype == 0) {
