@@ -5,10 +5,16 @@
 
 FILE *object;
 
-void cod_header(char const *nameProgram){
-    fprintf(object,"\t .section .text");
-    fprintf(object,"\n\t .global _%s",nameProgram);
-    fprintf(object,"\n\t jmp _%s",nameProgram);
+void headerprog(char *nameProgram)
+{
+	fprintf(object,"\t .section .text");
+	fprintf(object,"\n\t .global _%s",nameProgram);
+	fprintf(object,"\n\t jmp _%s",nameProgram);
+}
+
+void rotuloprog(char *nameProgram)
+{
+	fprintf(object,"\n_%s:", nameProgram);
 }
 
 int gofalse (int label)
@@ -25,7 +31,7 @@ int jump(int label)
 
 int mklabel (int label)
 {
-    fprintf(object, ".L %d: \t [[mklabel]] \n", label);
+    fprintf(object, ".L%d: \t [[mklabel]] \n", label);
     return label;
 }
 

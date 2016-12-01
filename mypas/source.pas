@@ -5,6 +5,7 @@ begin
     x := 1;
     y := 2;
     w := x + y;
+    write("hello mypas");
 
     if w > 4.0 then
         x := 2 * y + 4;

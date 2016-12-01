@@ -49,7 +49,7 @@ void programhead(void)
 		nameprogram = malloc(sizeof(lexeme)+1);
 		match(PROGRAM);
 		strcpy(nameprogram, lexeme);
-		cod_header(lexeme);
+		headerprog(nameprogram);
 		match(ID);
 	}
 }
@@ -94,7 +94,9 @@ void stmt(void)
 			/*<epsilon>*/;    // Emulating empty word
 	}
 }
-
+/*
+ * blockstmt -> BEGIN stmtlist END
+ */
 void blockstmt(void)
 {
     match(BEGIN);
@@ -116,7 +118,7 @@ void stmtlist(void)
  * WRITE -> WRITE ( " string " )
  */
 void writestmt(void) {
-    match(WRITE);
+    match(WRITE); fprintf(object,"[[writestmt]]");
     match('(');
     match(STR);
     match(')');
@@ -169,6 +171,7 @@ void declarative(void)
 void
 imperative(void)
 {
+	rotuloprog(nameprogram);
 	blockstmt();
 }
 
@@ -252,17 +255,18 @@ void ifstmt(void)
 	int _endif, _else;
 	match(IF);
 	printf("\n: [[ifstmt]]");
-//	syntype = superexpr(BOOLEAN); // TODO: check if is boolean
 	if(superexpr(BOOLEAN) < 0) {
-        fprintf(stderr,"incompatible unary operator: FATAL ERROR.\n");
+        fprintf(stderr,"Incompatible type, expected boolean...fatal error.\n");
     }
-	fprintf(object,"\tjz .L%d \t [[then]] \n", _endif = _else = labelcounter++); //TODO: criar arquivo object e descomentar os outros fprintf
+	fprintf(object,"\tjz .L%d \t [[then]] \n", _endif = _else = labelcounter++);
 	_endif = _else = gofalse(labelcounter++);
 	match(THEN);
 	stmtlist();
 	while (lookahead == ELIF) {
 		match(ELIF); fprintf(object,"\t [[elif]] \n");
-		syntype = superexpr(BOOLEAN);		
+        if(superexpr(BOOLEAN) < 0) {
+            fprintf(stderr,"Incompatible type, expected boolean...fatal error.\n");
+        }
 		match(THEN); fprintf(object,"\t [[then]] \n");
 		stmtlist();
 	}
@@ -292,8 +296,9 @@ void whilestmt(void)
 	match(WHILE);
     fprintf(object, "\n[[label: while_head]]");
 	/**/mklabel(while_head = labelcounter++);
-	syntype = superexpr(BOOLEAN);
-//	if(superexpr(BOOLEAN) < 0) // TODO: deu pau, escreve o erro tipo not boolean
+    if(superexpr(BOOLEAN) < 0) {
+        fprintf(stderr,"Incompatible type, expected boolean...fatal error.\n");
+    }
 	/**/gofalse(while_tail)/**/;
     match(DO);
     blockstmt();
@@ -331,8 +336,9 @@ void repeatstmt(void)
 	(void)printf("ID: %c", lookahead);
 
 	match(DO); stmtlist(); match(WHILE);
-	syntype = superexpr(BOOLEAN);
-//	if(superexpr(BOOLEAN) < 0) // TODO: deu pau, escreve o erro tipo not boolean
+    if(superexpr(BOOLEAN) < 0) {
+        fprintf(stderr,"Incompatible type, expected boolean...fatal error.\n");
+    }
 }
 
 /*
@@ -520,9 +526,8 @@ int expr (int inherited_type)
 					}
 					/*]]*/
 				}
-                else if(varlocality > -1) {  //TODO: this is really necessary
-//                    fprintf(object,"\tpushl %%eax\n\tmov %s,%%eax\n",
-//	                symtab_stream + symtab[varlocality][0]);
+                else if(varlocality > -1) {
+                    fprintf(object,"\tpushl %%eax\n\tmov %d,%%eax\n", symtab_stream + symtab[varlocality][0]);
 
                     if( (acctype != BOOLEAN && symtab[varlocality][1] != BOOLEAN)
                         || (acctype == BOOLEAN && symtab[varlocality][1] == BOOLEAN) || acctype == 0) {

@@ -9,7 +9,6 @@
 
 #define MAXID_SIZE	32
 char lexeme[MAXID_SIZE+1];
-int line_count = 1;
 
 int skipspaces (FILE *tape)
 {
