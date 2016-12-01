@@ -31,12 +31,28 @@ void mypas(void)
  * body -> stmt { stmtsep stmt }
  */
 /*
- * body -> declarative imperative
+ * body -> programhead declarative imperative
  */
 void body(void)
 {
+    programhead();
 	declarative();
 	imperative();
+}
+
+/*
+ * programhead -> PROGRAM nameprogram
+ */
+void programhead(void)
+{
+    if(lookahead == PROGRAM) {
+        match(PROGRAM);
+        if(lookahead = ID) {
+            /*[[*/char **namev = /*]]*/ namelist();
+            /*[[*/cod_header(namev);/*;;*/
+        }
+    }
+
 }
 
 /*
