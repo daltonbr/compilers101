@@ -157,9 +157,7 @@ void declarative(void)
 void
 imperative(void)
 {
-	match(BEGIN);
-	stmtlist();
-	match(END);
+	blockstmt();
 }
 
 void parmdef(void)
