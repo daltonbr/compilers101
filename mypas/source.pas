@@ -1,9 +1,11 @@
 var x, y : integer;
+w : real;
 begin
     x := 1;
     y := 2;
+    w := x + y;
 
-    if x > 3 then
+    if w > 4.0 then
         x := 2 * y + 4;
     elif x > 5 then
         x := 10;
