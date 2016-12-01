@@ -13,12 +13,26 @@ int line_count = 1;
 
 int skipspaces (FILE *tape)
 {
+    start:
 	lexeme[0] = getc(tape);
     while ( isspace (lexeme[0]) ) {
         lexeme[0] = getc(tape);
 	}  // enquanto não atingir o fim de arquivo
 
-    ungetc ( lexeme[0], tape );
+    if(lexeme[0] == '{')//comentarios
+    {
+        while ( lexeme[0]  != '}') {
+            //if(lexeme[0] = getc(tape) == 10)
+            //{
+                lexeme[0] = getc(tape);
+            //};
+        }
+        goto start;
+    }
+    else
+    {
+        ungetc ( lexeme[0], tape );
+    }
 
     return 0;
 }

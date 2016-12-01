@@ -1,4 +1,4 @@
-program nomeprograma
+program nomeprograma {comentario}
 var x, y : integer;
 w : real;
 begin
