@@ -3,6 +3,7 @@
 extern int lookahead; // @ local
 extern char lexeme[];
 extern int gettoken (FILE *); // @ lexer.c
+extern char *symtab_stream;  // @ symtab.c
 
 extern FILE *source, *object; // @ main.c
 
