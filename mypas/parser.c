@@ -49,7 +49,7 @@ void programhead(void)
 		nameprogram = malloc(sizeof(lexeme)+1);
 		match(PROGRAM);
 		strcpy(nameprogram, lexeme);
-		cod_header(lexeme);
+		headerprog(nameprogram);
 		match(ID);
 	}
 }
@@ -169,6 +169,7 @@ void declarative(void)
 void
 imperative(void)
 {
+	rotuloprog(nameprogram);
 	blockstmt();
 }
 
