@@ -1,0 +1,70 @@
+	 .section .text
+	 .global _teste
+	 jmp _teste
+	 .section .bss
+.commom g,4,4,
+.commom f,4,4,
+.commom c,4,4,
+.commom b,4,4,
+.commom a,4,4,
+	 .global nada
+	 .type nada, @function
+_nada:
+	 pushl %ebp
+	 movl %esp,%ebp
+	 movl 8(%ebp),%eax
+	 pushl %eax
+	 movl 12(%ebp),%eax
+	 pushl %eax
+	 popl %eax
+	 imul (%esp)
+	 addl &4,%esp
+	 pushl %eax
+	 popl %eax
+	 movl %eax,-4(%ebp)
+	 movl %ebp,%esp
+	 popl %ebp
+	 ret
+_teste:
+	 movl &1,%eax
+	 pushl %eax
+	 popl %eax
+	 movl %eax,c
+	 movl &2,%eax
+	 pushl %eax
+	 movl &3,%eax
+	 pushl %eax
+	 popl %eax
+	 imul (%esp)
+	 addl &4,%esp
+	 pushl %eax
+	 popl %eax
+	 movl %eax,b
+	 movl f,%eax 
+	 pushl %eax
+	 movl g,%eax 
+	 pushl %eax
+	 popl %%eax 
+	 imul (%esp) 
+	 addl &4,%esp
+	 pushl %%eax
+	 movl c,%eax 
+	 pushl %eax
+	 popl %ecx 
+	 popl %eax 
+	 cltd 
+	 idivl %ecx
+	 pushl %%eax
+	 movl a,%eax 
+	 pushl %eax
+	 movl b,%eax 
+	 pushl %eax
+	 popl %eax
+	 addl (%esp),%eax 
+	 addl &4,%esp
+	 pushl %%eax
+	 call nada
+	 int $128
+	 movl &1,%eax
+	 movl &0,%ebx
+	 int &128

@@ -1,0 +1,21 @@
+/**@<tokens.h>::**/
+
+
+enum {
+  ILEGALTOKEN = -1024,
+  OPENERR,
+  UNEXPECTEDCLOSINGPARENTHESIS,
+  MISSINGCLOSINGPARENTHESIS,
+};
+
+enum {
+  ID = 1025,
+  UINT,
+  FLOAT,
+  TEXT,
+  ASSGM,
+  NEQ,
+  LEQ,
+  GEQ,
+  CTE = 1025,
+};

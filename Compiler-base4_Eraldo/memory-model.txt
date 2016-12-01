@@ -1,0 +1,109 @@
+/* MEMORY MODEL
+
+ACTIVATION RECORD (32 bits model):
+
+    | EBP(r-1) | <-- EBP(r)
+    ------------
+    |          |
+    |  locals  |
+    |          |
+    ------------
+    |          |
+    |   parms  |
+    |          | <-- EBP(r+1) + 8
+    ------------
+    | ret addr | <-- EBP(r+1) + 4
+    ------------
+    |  EBP(r)  | <-- EBP(r+1)
+    ------------
+    |          |
+    |   etc    |
+    |          |
+    
+    Prolog:
+      push %ebp
+      mov %esp, %ebp
+    Locals:
+      # var x, y: integer; { 8 bytes required for local space }
+      add $-8, %esp # alloc 8 bytes for local variables
+      # x -> -4(%ebp)
+      # y -> -8(%ebp)
+      # x := 3
+      mov $3, -4(%ebp)
+      
+      ....
+      
+    Epilog:
+      mov %ebp, %esp
+      pop %ebp
+      ret
+      
+Example:
+
+    how to call a function named as f(int x, double y)?
+    answer:
+    
+      push <y.hi>
+      push <y.lo>
+      push <x>
+      call f
+      ...
+  f:
+      push %ebp
+      mov %esp, %ebp
+      ...
+      # x -> 8(%ebp)
+      # y -> 12(%ebp)
+    
+
+
+simple variables (scalars):
+
+                  mypas                as (i386)
+    global:     source code         object code
+                <identifier>        _<identifier>
+    
+    local:      source code         object code
+                <identifier>        <offset>(%ebp)
+                                    offset = -size_of_type(identifier)(%ebp), if first local
+                                    offset = prev_offset-size_of_type(identifier)(%ebp)
+                                    
+STRINGS:
+
+        <identifier> -> to be continued...
+        
+                                    
+subprograms:     <identifier>         _<identifier>
+
+ARRAYS:
+
+        <identifier>  -->  memory-block
+        
+        global:
+        
+            assembly gnu as:  .common _<identifier>,block_size,alignment
+            
+            memory block:
+            
+            var x: array [1024] of integer;
+            
+            gnu-assembly: .common _x,4096,32
+            
+            x[i] -> effective address @ $(_x + i * 4)
+            
+            var x: array [1024] of array [5] of integer;
+            
+            gnu-assembly: .common _x,20480,32
+            
+            x[i][j] -> effective address @ $(_x + 4 * (5 * i + j))
+            
+            var y: array [256] of array [8] of array [4] of integer;
+            
+            gnu-assembly: .common _y,8192,32
+            
+            y[i][j][k] -> effective address @
+                            $(_y + 4 * (k + 4 * (j + 8 * i)))
+                            
+            y[i<1>]...[i<n>] ->
+            
+            $(_y + 4 * (i<n> + s<n>*(i<n-1> + s<n-1>*(...+s<2>*i<1>+i<2>)...)

@@ -1,0 +1,22 @@
+/**@<tokens.h>::**/
+
+#define MAXIDLEN        0x80
+#define MAXTBENTRIES	0x10000
+
+enum {
+  ILEGALTOKEN = -1024,
+  OPENERR,
+  UNEXPECTEDCLOSINGPARENTHESIS,
+  MISSINGCLOSINGPARENTHESIS,
+};
+
+
+enum {
+    ID = 1024,
+    UINT,
+    UFLT,
+    UDBL,
+    COLONEQ,
+    STRING,
+    ASCII,
+};
