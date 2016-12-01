@@ -4,19 +4,18 @@
 #include <pseudoassembly.h>
 
 FILE *object;
-
+/*
 void headerprog(char *nameProgram)
 {
-	fprintf(object,"\t .section .text");
+	fprintf(object,"\t .section __TEXT,__text,regular,pure_instructions");
 	fprintf(object,"\n\t .global _%s",nameProgram);
-	fprintf(object,"\n\t jmp _%s",nameProgram);
 }
 
 void rotuloprog(char *nameProgram)
 {
-	fprintf(object,"\n_%s:", nameProgram);
+	fprintf(object,"\n_%s:\n", nameProgram);
 }
-
+*/
 int gofalse (int label)
 {
     fprintf(object, "\tjz .L%d \t [[gofalse]]\n ", label);

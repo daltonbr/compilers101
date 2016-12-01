@@ -35,7 +35,7 @@ void mypas(void)
  */
 void body(void)
 {
-	programhead();
+	//programhead();
 	declarative();
 	imperative();
 }
@@ -43,6 +43,7 @@ void body(void)
 /*
  * programhead -> PROGRAM nameprogram
  */
+/*
 void programhead(void)
 {
 	if(lookahead == PROGRAM) {
@@ -53,7 +54,7 @@ void programhead(void)
 		match(ID);
 	}
 }
-
+*/
 /*
  * stmt -> imperative
  * 	| IF expr THEN stmtlist { ELIF expr THEN stmtlist } [ ELSE stmtlist ] ENDIF
@@ -171,7 +172,7 @@ void declarative(void)
 void
 imperative(void)
 {
-	rotuloprog(nameprogram);
+	//rotuloprog(nameprogram);
 	blockstmt();
 }
 

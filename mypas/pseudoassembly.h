@@ -1,10 +1,10 @@
 /**@<pseudoassembly.h>::**/
 
 extern FILE *object; // @ mypas.c
-
+/*
 void headerprog(char *nameProgram);
 void rotuloprog(char *nameProgram);
-
+*/
 int lmovel(char const *variable);
 int lmoveq(char const *variable);
 int rmovel(char const *variable);
