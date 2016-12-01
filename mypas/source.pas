@@ -1,11 +1,10 @@
-program nomeprograma {comentario}
 var x, y : integer;
 w : real;
 begin
     x := 1;
     y := 2;
     w := x + y;
-    write("hello mypas");
+    write("hello mypas"); {comentario}
 
     if w > 4.0 then
         x := 2 * y + 4;
