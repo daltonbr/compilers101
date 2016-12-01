@@ -21,7 +21,7 @@ int labelcounter = 1;		// global var to label in machine code
 
 /*************************** LL(1) grammar definition ******************************
  *
- * mypas -> body EOF
+ * mypas -> body .
  */
 void mypas(void)
 {
@@ -29,9 +29,6 @@ void mypas(void)
 	match('.');
 }
 
-/*
- * body -> stmt { stmtsep stmt }
- */
 /*
  * body -> programhead declarative imperative
  */
@@ -62,18 +59,6 @@ void programhead(void)
 }
 
 /*
- * stmtsep -> ; | EOL
- */
-int stmtsep(void)
-{
-	switch(lookahead){
-		case ';':case '\n':   /// fazer em casa o \n
-			match(lookahead); return 1;
-	}
-	return 0;
-}
-
-/*
  * stmt -> imperative
  * 	| IF expr THEN stmtlist { ELIF expr THEN stmtlist } [ ELSE stmtlist ] ENDIF
  * 	| WHILE superexpr DO stmtlist 
@@ -96,11 +81,14 @@ void stmt(void)
         case BEGIN:
             blockstmt();
             break;
+        case WRITE:
+            writestmt();
+            break;
 		case ID:	// hereafter we expect FIRST(expr)
 		case FLT:
 		case DEC:
-		case TRUE:	// TODO: colocar isso no analisador lexico
-		case FALSE:	// TODO: isso também
+		case TRUE:
+		case FALSE:
 		case NOT:
 		case '-':
 		case '(':
@@ -131,7 +119,12 @@ void stmtlist(void)
 /*
  * WRITE -> WRITE ( " string " )
  */
-
+void writestmt(void) {
+    match(WRITE);
+    match('(');
+    match(STR);
+    match(')');
+}
 /*
  * declarative -> [
  * 		   VAR namelist ':' vartype ';' ||

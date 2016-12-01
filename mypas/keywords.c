@@ -16,6 +16,7 @@ char *keywords[] = {
         "until",
         "procedure",
         "function",
+        "write",
         "var",
         "boolean",
         "integer",

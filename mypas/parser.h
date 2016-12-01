@@ -39,3 +39,4 @@ int isrelop();
 void declarative(void);
 void imperative(void);
 char ** namelist(void);
+void writestmt(void);

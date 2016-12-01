@@ -14,48 +14,11 @@ int line_count = 1;
 int skipspaces (FILE *tape)
 {
 	lexeme[0] = getc(tape);
-    while ( lexeme[0] != '\n' && isspace (lexeme[0]) ) {
+    while ( isspace (lexeme[0]) ) {
         lexeme[0] = getc(tape);
 	}  // enquanto não atingir o fim de arquivo
 
-        ungetc ( lexeme[0], tape );
-
-    int head;
-
-    _skipspaces:
-    while (isspace(head = getc(tape)))
-        if(head == '\n') line_count++;
-
-    if (head == '{') {
-        while ((head = getc(tape)) != '}') {
-            if(head == '\n') line_count++;
-            if (head == EOF)
-                return EOF;
-        }
-        goto _skipspaces;
-    } else if(head == '(') {
-        head = getc(tape);
-        if(head != '*') {
-            ungetc(head, tape);
-            ungetc('(', tape);
-        } else {
-            _keeplooking:
-            while ((head = getc(tape)) != '*') {
-                if(head == '\n') line_count++;
-                if (head == EOF)
-                    return EOF;
-            }
-            if ((head = getc(tape)) == ')') {
-                goto _skipspaces;
-            } else {
-                ungetc(head, tape);
-                goto _keeplooking;
-            }
-        }
-    }
-    else {
-        ungetc(head, tape);
-    }
+    ungetc ( lexeme[0], tape );
 
     return 0;
 }
@@ -194,6 +157,32 @@ int isexp (FILE *tape, int *count) {
 	return 0;
 }
 
+int is_string(FILE *tape) {
+    int i = 0;
+
+    if ((lexeme[i] = getc(tape)) == '\"') {
+        i++;
+        if( isalnum(lexeme[i] = getc(tape)) && lexeme[i] != '\"' || lexeme[i] == '\n') {
+            i++;
+            while (isalnum(lexeme[i] = getc(tape)) && lexeme[i] != '\"' && lexeme[i] != '\n' || lexeme[i] == ' ') i++;
+        }
+
+        if(lexeme[i] == '\"') {
+            return STR;
+        } else {
+            ungetc(lexeme[i], tape);
+            while(i > 0) {
+                i--;
+                ungetc(lexeme[i], tape);
+            }
+        }
+    } else {
+        ungetc(lexeme[i], tape);
+    }
+
+    return 0;
+}
+
 int gettoken (FILE *sourcecode)
 {
         int token;
@@ -212,7 +201,11 @@ int gettoken (FILE *sourcecode)
 	    if( (token = isfloat (sourcecode)) ) {
 		    return token;
 	    }
-	
+
+        if( (token = is_string(sourcecode)) ) {
+            return token;
+        }
+
 	    lexeme[1] = 0;
         lexeme[0] = token = getc (sourcecode);
         return token;
