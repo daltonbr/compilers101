@@ -120,7 +120,7 @@ void stmtlist(void)
  */
 void writestmt(void) {
     match(WRITE);
-	fprintf(object,"[[writestmt]]");
+	fprintf(object,"[[writestmt]]\n");
     match('(');
     writeln(lexeme);
     match(STR);
