@@ -285,11 +285,11 @@ void whilestmt(void)
 	syntype = superexpr(BOOLEAN);
 //	if(superexpr(BOOLEAN) < 0) // TODO: deu pau, escreve o erro tipo not boolean
 	/**/gofalse(while_tail)/**/;
-	match(DO); stmtlist();
+    match(DO);
+    blockstmt();
 	/**/jump(while_head = labelcounter++)/**/;
     fprintf(object, "\n[[label: while_tail]]");
     /**/mklabel(while_tail)/**/;
-    match(END);
 
 	/*
 	 *    | while |

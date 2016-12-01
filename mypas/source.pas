@@ -11,6 +11,7 @@ begin
     y := x * y;
     endif;
     while x < 2 do
+    begin
         x := x + 1;
     end;
 end.
