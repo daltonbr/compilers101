@@ -14,6 +14,8 @@
 #include <macros.h>
 #include <pseudoassembly.h>
 
+#define MAX_ARG_NUM 1024
+
 FILE *source, *object;
 int labelcounter = 1;		// global var to label in machine code
 
@@ -35,7 +37,7 @@ void mypas(void)
  */
 void body(void)
 {
-    programhead();
+    //programhead();
 	declarative();
 	imperative();
 }
@@ -48,8 +50,12 @@ void programhead(void)
     if(lookahead == PROGRAM) {
         match(PROGRAM);
         if(lookahead == ID) {
-            /*[[*/char **namev = /*]]*/ namelist();
-            /*[[*/cod_header(namev);/*;;*/
+            /*[[*/
+            char *symvec = calloc(MAX_ARG_NUM, sizeof(char *));
+            symvec = malloc(strlen(lexeme) + 1);
+            strcpy(symvec, lexeme);
+            cod_header(symvec);
+            /*;;*/
         }
     }
 
@@ -197,7 +203,7 @@ _par_begin:
 /*
  * namelist -> ID { , ID}
  */
-#define MAX_ARG_NUM 1024
+
 char **
 namelist(void)
 {
