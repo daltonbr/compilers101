@@ -1,3 +1,4 @@
+program nomeprograma
 var x, y : integer;
 w : real;
 begin
