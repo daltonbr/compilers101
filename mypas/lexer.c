@@ -20,6 +20,7 @@ int skipspaces (FILE *tape)
 
     if(lexeme[0] == '{')//comentarios
     {
+		fprintf(object, "[[commentary block]]");
         while ( lexeme[0]  != '}') {
             //if(lexeme[0] = getc(tape) == 10)
             //{
