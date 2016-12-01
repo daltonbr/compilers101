@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="mypas"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/mint/compilers101/mypas/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/mint/compilers101/mypas/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/mint/compilers101/mypas/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/mint/compilers101/mypas/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/mint/compilers101/mypas/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/mint/compilers101/mypas/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/mint/compilers101/mypas/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/mint/compilers101/mypas/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/mint/compilers101/mypas/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/mint/compilers101/mypas/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/mint/compilers101/mypas/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/mint/compilers101/mypas/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/mint/compilers101/mypas/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/mint/compilers101/mypas/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/mint/compilers101/mypas/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="mypas">
+				<Option output="/home/mint/compilers101/mypas/cmake-build-debug/mypas" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/mint/compilers101/mypas/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/mint/compilers101/mypas/."/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+					<Add directory="/usr/include/c++/5"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/5"/>
+					<Add directory="/usr/include/c++/5/backward"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/mint/compilers101/mypas/cmake-build-debug/Makefile&quot;  VERBOSE=1 mypas"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/mint/compilers101/mypas/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/mint/compilers101/mypas/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/mint/compilers101/mypas/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="mypas/fast">
+				<Option output="/home/mint/compilers101/mypas/cmake-build-debug/mypas" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/mint/compilers101/mypas/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/mint/compilers101/mypas/."/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+					<Add directory="/usr/include/c++/5"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/5"/>
+					<Add directory="/usr/include/c++/5/backward"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/mint/compilers101/mypas/cmake-build-debug/Makefile&quot;  VERBOSE=1 mypas/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/mint/compilers101/mypas/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/mint/compilers101/mypas/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/mint/compilers101/mypas/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/mint/compilers101/mypas/keywords.c">
+			<Option target="mypas"/>
+		</Unit>
+		<Unit filename="/home/mint/compilers101/mypas/keywords.h">
+			<Option target="mypas"/>
+		</Unit>
+		<Unit filename="/home/mint/compilers101/mypas/lexer.c">
+			<Option target="mypas"/>
+		</Unit>
+		<Unit filename="/home/mint/compilers101/mypas/lexer.h">
+			<Option target="mypas"/>
+		</Unit>
+		<Unit filename="/home/mint/compilers101/mypas/macros.h">
+			<Option target="mypas"/>
+		</Unit>
+		<Unit filename="/home/mint/compilers101/mypas/mypas.c">
+			<Option target="mypas"/>
+		</Unit>
+		<Unit filename="/home/mint/compilers101/mypas/mypas.h">
+			<Option target="mypas"/>
+		</Unit>
+		<Unit filename="/home/mint/compilers101/mypas/parser.c">
+			<Option target="mypas"/>
+		</Unit>
+		<Unit filename="/home/mint/compilers101/mypas/parser.h">
+			<Option target="mypas"/>
+		</Unit>
+		<Unit filename="/home/mint/compilers101/mypas/pseudoassembly.c">
+			<Option target="mypas"/>
+		</Unit>
+		<Unit filename="/home/mint/compilers101/mypas/pseudoassembly.h">
+			<Option target="mypas"/>
+		</Unit>
+		<Unit filename="/home/mint/compilers101/mypas/symtab.c">
+			<Option target="mypas"/>
+		</Unit>
+		<Unit filename="/home/mint/compilers101/mypas/symtab.h">
+			<Option target="mypas"/>
+		</Unit>
+		<Unit filename="/home/mint/compilers101/mypas/tokens.h">
+			<Option target="mypas"/>
+		</Unit>
+		<Unit filename="/home/mint/compilers101/mypas/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
