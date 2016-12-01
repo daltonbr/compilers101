@@ -47,7 +47,7 @@ void programhead(void)
 {
     if(lookahead == PROGRAM) {
         match(PROGRAM);
-        if(lookahead = ID) {
+        if(lookahead == ID) {
             /*[[*/char **namev = /*]]*/ namelist();
             /*[[*/cod_header(namev);/*;;*/
         }

@@ -10,6 +10,7 @@ extern void match (int); // @ local
 
 /* syntax names */
 void mypas(void);
+void programhead(void);
 void body(void);
 void smtmlist(void);
 void cmd(void);
