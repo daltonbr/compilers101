@@ -236,9 +236,8 @@ void ifstmt(void)
 	int _endif, _else;
 	match(IF);
 	printf("\n: [[ifstmt]]");
-//	syntype = superexpr(BOOLEAN); // TODO: check if is boolean
 	if(superexpr(BOOLEAN) < 0) {
-        fprintf(stderr,"incompatible unary operator: FATAL ERROR.\n");
+        fprintf(stderr,"Incompatible type, expected boolean...fatal error.\n");
     }
 	fprintf(object,"\tjz .L%d \t [[then]] \n", _endif = _else = labelcounter++); //TODO: criar arquivo object e descomentar os outros fprintf
 	_endif = _else = gofalse(labelcounter++);
@@ -246,7 +245,9 @@ void ifstmt(void)
 	stmtlist();
 	while (lookahead == ELIF) {
 		match(ELIF); fprintf(object,"\t [[elif]] \n");
-		syntype = superexpr(BOOLEAN);		
+        if(superexpr(BOOLEAN) < 0) {
+            fprintf(stderr,"Incompatible type, expected boolean...fatal error.\n");
+        }
 		match(THEN); fprintf(object,"\t [[then]] \n");
 		stmtlist();
 	}
@@ -276,8 +277,9 @@ void whilestmt(void)
 	match(WHILE);
     fprintf(object, "\n[[label: while_head]]");
 	/**/mklabel(while_head = labelcounter++);
-	syntype = superexpr(BOOLEAN);
-//	if(superexpr(BOOLEAN) < 0) // TODO: deu pau, escreve o erro tipo not boolean
+    if(superexpr(BOOLEAN) < 0) {
+        fprintf(stderr,"Incompatible type, expected boolean...fatal error.\n");
+    }
 	/**/gofalse(while_tail)/**/;
     match(DO);
     blockstmt();
@@ -315,8 +317,9 @@ void repeatstmt(void)
 	(void)printf("ID: %c", lookahead);
 
 	match(DO); stmtlist(); match(WHILE);
-	syntype = superexpr(BOOLEAN);
-//	if(superexpr(BOOLEAN) < 0) // TODO: deu pau, escreve o erro tipo not boolean
+    if(superexpr(BOOLEAN) < 0) {
+        fprintf(stderr,"Incompatible type, expected boolean...fatal error.\n");
+    }
 }
 
 /*
